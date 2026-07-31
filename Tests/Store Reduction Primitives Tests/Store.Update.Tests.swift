@@ -37,20 +37,20 @@ struct `Store.Update Tests` {
         }
     }
 
-    /// Locates the count inside the screen.
-    static let countLens = Optic.Lens<Screen, Int>(
-        get: { screen in screen.count },
-        set: { screen, count in Screen(count: count, resets: screen.resets) }
-    )
-
-    /// Recognises counter messages among the screen's messages.
-    static let counterPrism = Optic.Prism<Message, Counter>(
-        embed: Message.counter,
-        extract: { message in
-            guard case .counter(let action) = message else { return nil }
-            return action
-        }
-    )
+    /// Lifts a counter update into the screen domain.
+    static func lifted(
+        _ update: Store.Update<Int, Counter, Job>
+    ) -> Store.Update<Screen, Message, Job> {
+        update.lift(
+            get: { screen in screen.count },
+            set: { screen, count in Screen(count: count, resets: screen.resets) },
+            extract: { message in
+                guard case .counter(let action) = message else { return nil }
+                return action
+            },
+            embed: Message.counter
+        )
+    }
 
     @Suite
     struct Unit {
@@ -149,10 +149,7 @@ struct `Store.Update Tests` {
 
         @Test
         func `lifting advances the nested state`() {
-            let screen = `Store.Update Tests`.counter.lift(
-                state: `Store.Update Tests`.countLens,
-                action: `Store.Update Tests`.counterPrism
-            )
+            let screen = `Store.Update Tests`.lifted(`Store.Update Tests`.counter)
 
             var state = Screen(count: 4, resets: 1)
             _ = screen.effect(for: .counter(.increment), in: &state)
@@ -163,10 +160,7 @@ struct `Store.Update Tests` {
         @Test
         func `lifting embeds the child actions of the effect`() {
             let sending = Store.Update<Int, Counter, Job> { _, _ in .send(.decrement) }
-            let screen = sending.lift(
-                state: `Store.Update Tests`.countLens,
-                action: `Store.Update Tests`.counterPrism
-            )
+            let screen = `Store.Update Tests`.lifted(sending)
 
             var state = Screen(count: 0, resets: 0)
             let effect = screen.effect(for: .counter(.increment), in: &state)
@@ -176,10 +170,7 @@ struct `Store.Update Tests` {
 
         @Test
         func `lifting ignores an unrecognised message`() {
-            let screen = `Store.Update Tests`.counter.lift(
-                state: `Store.Update Tests`.countLens,
-                action: `Store.Update Tests`.counterPrism
-            )
+            let screen = `Store.Update Tests`.lifted(`Store.Update Tests`.counter)
 
             var state = Screen(count: 4, resets: 1)
             let effect = screen.effect(for: .reset, in: &state)
@@ -225,10 +216,7 @@ struct `Store.Update Tests` {
                 count += 1
                 return .none
             }
-            let screen = quiet.lift(
-                state: `Store.Update Tests`.countLens,
-                action: `Store.Update Tests`.counterPrism
-            )
+            let screen = `Store.Update Tests`.lifted(quiet)
 
             var state = Screen(count: 0, resets: 0)
             let effect = screen.effect(for: .counter(.increment), in: &state)
@@ -238,11 +226,8 @@ struct `Store.Update Tests` {
         }
 
         @Test
-        func `lifting writes the nested state back through the lens`() {
-            let screen = `Store.Update Tests`.counter.lift(
-                state: `Store.Update Tests`.countLens,
-                action: `Store.Update Tests`.counterPrism
-            )
+        func `lifting writes the nested state back and leaves the rest alone`() {
+            let screen = `Store.Update Tests`.lifted(`Store.Update Tests`.counter)
 
             var state = Screen(count: 0, resets: 3)
             _ = screen.effect(for: .counter(.decrement), in: &state)

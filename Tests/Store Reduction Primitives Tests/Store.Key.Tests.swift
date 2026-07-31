@@ -16,6 +16,8 @@ struct `Store.Key Tests` {
 
     /// An upward aggregation over a free monoid.
     enum Warnings: Store.Key.Aggregate {
+        typealias Value = [Int]
+
         static var aggregation: Algebra.Monoid<[Int]> {
             .init(identity: [], combining: { $0 + $1 })
         }
@@ -23,6 +25,8 @@ struct `Store.Key Tests` {
 
     /// An upward aggregation whose identity is not empty.
     enum Ceiling: Store.Key.Aggregate {
+        typealias Value = Int
+
         static var aggregation: Algebra.Monoid<Int> {
             .init(identity: Int.min, combining: { Swift.max($0, $1) })
         }

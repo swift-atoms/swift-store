@@ -1,5 +1,4 @@
 public import Algebra_Monoid_Primitives
-public import Optic_Primitives
 
 extension Store {
     /// The transition that advances state by one action.
@@ -36,17 +35,13 @@ extension Store {
     /// }
     ///
     /// let screen = counter.lift(
-    ///     state: Optic.Lens(
-    ///         get: { (screen: ScreenState) in screen.count },
-    ///         set: { screen, count in ScreenState(count: count, title: screen.title) }
-    ///     ),
-    ///     action: Optic.Prism(
-    ///         embed: ScreenAction.counter,
-    ///         extract: { action in
-    ///             guard case .counter(let inner) = action else { return nil }
-    ///             return inner
-    ///         }
-    ///     )
+    ///     get: { (screen: ScreenState) in screen.count },
+    ///     set: { screen, count in ScreenState(count: count, title: screen.title) },
+    ///     extract: { message in
+    ///         guard case .counter(let action) = message else { return nil }
+    ///         return action
+    ///     },
+    ///     embed: ScreenAction.counter
     /// )
     /// ```
     public struct Update<State, Action, Operation> {
@@ -126,25 +121,34 @@ extension Store.Update {
 extension Store.Update {
     /// This update moved into a wider domain.
     ///
-    /// The lens says where the smaller state lives inside the larger one; the prism
-    /// says which of the larger domain's messages are this update's actions. A
-    /// message the prism does not recognise leaves the state untouched and requests
-    /// no work, which is what makes the lifted update total.
+    /// `get` and `set` say where the smaller state lives inside the larger one;
+    /// `extract` and `embed` say which of the larger domain's messages are this
+    /// update's actions. A message `extract` does not recognise leaves the state
+    /// untouched and requests no work, which is what makes the lifted update total.
+    ///
+    /// These are the four functions a lens and a prism are made of, taken directly
+    /// rather than as those types, so this layer neither owns nor depends on an
+    /// optics vocabulary. A caller holding an `Optic.Lens` and an `Optic.Prism`
+    /// passes their members straight through.
     ///
     /// - Parameters:
-    ///   - state: Locates this update's state within the wider state.
-    ///   - action: Recognises and embeds this update's actions within the wider messages.
+    ///   - get: Reads this update's state out of the wider state.
+    ///   - set: Writes this update's state back into the wider state.
+    ///   - extract: Recognises this update's actions among the wider messages.
+    ///   - embed: Expresses one of this update's actions as a wider message.
     /// - Returns: An update over the wider domain.
     public func lift<Whole, Message>(
-        state: Optic.Lens<Whole, State>,
-        action: Optic.Prism<Message, Action>
+        get: @escaping @Sendable (Whole) -> State,
+        set: @escaping @Sendable (Whole, State) -> Whole,
+        extract: @escaping @Sendable (Message) -> Action?,
+        embed: @escaping @Sendable (Action) -> Message
     ) -> Store.Update<Whole, Message, Operation> {
         .init { whole, message in
-            guard let inner = action.extract(message) else { return .none }
-            var part = state.get(whole)
+            guard let inner = extract(message) else { return .none }
+            var part = get(whole)
             let effect = self.transition(&part, inner)
-            whole = state.set(whole, part)
-            return effect.map(action: action.embed)
+            whole = set(whole, part)
+            return effect.map(action: embed)
         }
     }
 

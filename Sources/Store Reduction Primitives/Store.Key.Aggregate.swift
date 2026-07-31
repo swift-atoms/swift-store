@@ -12,11 +12,19 @@ public import Algebra_Monoid_Primitives
 ///
 /// ```swift
 /// enum Warnings: Store.Key.Aggregate {
+///     typealias Value = [Warning]
+///
 ///     static var aggregation: Algebra.Monoid<[Warning]> {
 ///         .init(identity: [], combining: +)
 ///     }
 /// }
 /// ```
+///
+/// State `Value` explicitly. It is the inherited associated type of
+/// ``__StoreKeyProtocol``, and the only witness that could imply it here —
+/// `aggregation` — carries it in a generic-argument position while the sole other
+/// requirement, `initial`, is satisfied by the defaulted extension below and so
+/// contributes nothing to infer from.
 ///
 /// ``__StoreKeyProtocol/initial`` is defaulted to `aggregation.identity`; a
 /// conforming type that states its own initial value is asserting something the

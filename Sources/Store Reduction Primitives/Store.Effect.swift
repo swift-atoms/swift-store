@@ -185,7 +185,7 @@ extension Store.Effect {
     /// - Parameter transform: Rewrites one operation.
     /// - Returns: The same effect structure over the rewritten operation type.
     /// - Throws: Whatever `transform` throws.
-    public func map<Other, Failure: Swift.Error>(
+    public func lower<Other, Failure: Swift.Error>(
         operation transform: (Operation) throws(Failure) -> Other
     ) throws(Failure) -> Store.Effect<Action, Other> {
         switch self {
@@ -201,14 +201,14 @@ extension Store.Effect {
         case .merge(let effects):
             return .merge(
                 try effects.map { (effect: Self) throws(Failure) -> Store.Effect<Action, Other> in
-                    try effect.map(operation: transform)
+                    try effect.lower(operation: transform)
                 }
             )
 
         case .sequence(let effects):
             return .sequence(
                 try effects.map { (effect: Self) throws(Failure) -> Store.Effect<Action, Other> in
-                    try effect.map(operation: transform)
+                    try effect.lower(operation: transform)
                 }
             )
         }

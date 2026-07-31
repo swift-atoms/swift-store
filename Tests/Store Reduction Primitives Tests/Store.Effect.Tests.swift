@@ -154,12 +154,9 @@ struct `Store.Effect Tests` {
                 }
             }
 
-            #expect(
-                mapped == .merge([
-                    .send(1),
-                    .sequence([.send(2), .run(.load)]),
-                ])
-            )
+            let expected: Store.Effect<Int, Job> = .merge([.send(1), .sequence([.send(2), .run(.load)])])
+
+            #expect(mapped == expected)
         }
 
         @Test
@@ -177,17 +174,12 @@ struct `Store.Effect Tests` {
         func `mapping operations leaves actions untouched`() {
             let effect = Effect.sequence([.send(.first), .run(.load), .merge([.run(.save)])])
 
-            let mapped: Store.Effect<Action, Int> = effect.map { operation in
+            let lowered: Store.Effect<Action, Int> = effect.lower { operation in
                 operation == .load ? 0 : 1
             }
+            let expected: Store.Effect<Action, Int> = .sequence([.send(.first), .run(0), .merge([.run(1)])])
 
-            #expect(
-                mapped == .sequence([
-                    .send(.first),
-                    .run(0),
-                    .merge([.run(1)]),
-                ])
-            )
+            #expect(lowered == expected)
         }
     }
 
@@ -209,12 +201,9 @@ struct `Store.Effect Tests` {
         func `merging does not flatten into a sequence`() {
             let merged = Effect.sequence([.send(.first)]).merged(with: .sequence([.send(.second)]))
 
-            #expect(
-                merged == .merge([
-                    .sequence([.send(.first)]),
-                    .sequence([.send(.second)]),
-                ])
-            )
+            let expected: Effect = .merge([.sequence([.send(.first)]), .sequence([.send(.second)])])
+
+            #expect(merged == expected)
         }
 
         @Test

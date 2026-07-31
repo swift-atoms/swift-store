@@ -23,14 +23,12 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/swift-primitives/swift-algebra-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-optic-primitives.git", branch: "main"),
     ],
     targets: [
         .target(
             name: "Store Reduction Primitives",
             dependencies: [
                 .product(name: "Algebra Monoid Primitives", package: "swift-algebra-primitives"),
-                .product(name: "Optic Primitives", package: "swift-optic-primitives"),
             ]
         ),
         .target(
@@ -38,7 +36,6 @@ let package = Package(
             dependencies: [
                 "Store Reduction Primitives",
                 .product(name: "Algebra Monoid Primitives", package: "swift-algebra-primitives"),
-                .product(name: "Optic Primitives", package: "swift-optic-primitives"),
             ],
             path: "Tests/Support"
         ),

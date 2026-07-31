@@ -27,6 +27,8 @@ extension Store {
     /// }
     ///
     /// enum Warnings: Store.Key.Aggregate {
+    ///     typealias Value = [Warning]
+    ///
     ///     static var aggregation: Algebra.Monoid<[Warning]> {
     ///         .init(identity: [], combining: +)
     ///     }
