@@ -1,0 +1,9 @@
+# .github/metadata.yaml
+description: "Pure reduction algebra for the state architecture: a total update, effects as data, and typed communication keys for Swift."
+topics:
+  - primitives
+  - store
+  - state
+homepage: "https://swift-institute.org"
+readme:
+  family: E
