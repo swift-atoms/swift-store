@@ -12,7 +12,7 @@ The pure reduction algebra of the state architecture — the update that advance
 - **Effects as data** — `Store.Effect` is a five-case value, not a computation. Producing one performs nothing.
 - **The work leaf is yours** — the effect's `Operation` type is a generic parameter this package never inspects, so the runtime decides what work means. Cancellation is an operation like any other and needs no case of its own.
 - **Composition with laws, not conventions** — merging and sequencing each form a monoid with `none` as identity, published as `Algebra.Monoid` witnesses and verified as laws rather than asserted in prose.
-- **Scoping without reflection** — `lift(get:set:extract:embed:)` moves an update into a wider domain. A message `extract` does not recognise leaves the state untouched. It takes the four functions a lens and a prism are made of rather than those types, so this layer neither owns nor depends on an optics vocabulary; a caller holding an `Optic.Lens` and an `Optic.Prism` passes their members straight through.
+- **Scoping without reflection** — `lift(state:action:)` moves an update into a wider domain, taking an `Optic.Lens` onto the wider state and an `Optic.Prism` onto the wider message. A message the prism does not recognise leaves the state untouched. Scoping *is* a lens and a prism, so it is spelled with the ecosystem's optics rather than re-stating them as loose functions.
 - **Typed communication keys** — `Store.Key.Protocol` names a value travelling downward; `Store.Key.Aggregate` adds the monoid that combines contributions travelling upward. The conforming type is the address, so nothing is matched by name or by reflection.
 - **Deployable where reflection is not** — no reflection, no Objective-C interop, no metatype identity, no Foundation, no locks.
 
@@ -84,7 +84,7 @@ Two library products over a single source module.
 | Product | When to import |
 |---------|----------------|
 | `Store Reduction Primitives` | Declaring updates, effects, and communication keys in library or application code. |
-| `Store Reduction Primitives Test Support` | Test targets exercising reductions; re-exports the main module alongside `Algebra Monoid Primitives`. |
+| `Store Reduction Primitives Test Support` | Test targets exercising reductions; re-exports the main module alongside `Algebra Monoid Primitives` and `Optic Primitives`. |
 
 The module is named `Store Reduction Primitives` rather than `Store Primitives` because
 [swift-storage-primitives](https://github.com/swift-primitives/swift-storage-primitives) already

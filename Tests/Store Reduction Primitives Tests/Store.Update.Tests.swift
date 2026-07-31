@@ -42,13 +42,17 @@ struct `Store.Update Tests` {
         _ update: Store.Update<Int, Counter, Job>
     ) -> Store.Update<Screen, Message, Job> {
         update.lift(
-            get: { screen in screen.count },
-            set: { screen, count in Screen(count: count, resets: screen.resets) },
-            extract: { message in
-                guard case .counter(let action) = message else { return nil }
-                return action
-            },
-            embed: Message.counter
+            state: Optic.Lens<Screen, Int>(
+                get: { screen in screen.count },
+                set: { screen, count in Screen(count: count, resets: screen.resets) }
+            ),
+            action: Optic.Prism<Message, Counter>(
+                embed: Message.counter,
+                extract: { message in
+                    guard case .counter(let action) = message else { return nil }
+                    return action
+                }
+            )
         )
     }
 
