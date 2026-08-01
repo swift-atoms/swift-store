@@ -3,6 +3,7 @@ import Testing
 
 @Suite
 struct `Store.Update Tests` {
+    @Suite struct Integration {}
 
     enum Counter: Equatable, Sendable {
         case increment

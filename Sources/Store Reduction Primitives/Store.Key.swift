@@ -34,15 +34,17 @@ extension Store {
     ///     }
     /// }
     /// ```
-    public enum Key {
-        /// A key naming a typed value with an initial value.
-        ///
-        /// Use `Store.Key.Protocol` to refer to this type.
-        public typealias `Protocol` = __StoreKeyProtocol
+    public enum Key {}
+}
 
-        /// A key whose contributions combine under a monoid.
-        ///
-        /// Use `Store.Key.Aggregate` to refer to this type.
-        public typealias Aggregate = __StoreKeyAggregateProtocol
-    }
+extension Store.Key {
+    /// A key naming a typed value with an initial value.
+    ///
+    /// Use `Store.Key.Protocol` to refer to this type.
+    public typealias `Protocol` = __StoreKeyProtocol
+
+    /// A key whose contributions combine under a monoid.
+    ///
+    /// Use `Store.Key.Aggregate` to refer to this type.
+    public typealias Aggregate = __StoreKeyAggregateProtocol
 }

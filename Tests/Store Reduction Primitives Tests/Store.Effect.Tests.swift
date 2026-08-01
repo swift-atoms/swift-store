@@ -3,6 +3,7 @@ import Testing
 
 @Suite
 struct `Store.Effect Tests` {
+    @Suite struct Integration {}
 
     enum Action: Equatable, Sendable {
         case first

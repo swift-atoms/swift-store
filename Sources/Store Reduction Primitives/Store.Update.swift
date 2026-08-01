@@ -49,6 +49,7 @@ extension Store {
     ///     )
     /// )
     /// ```
+    @frozen
     public struct Update<State, Action, Operation> {
         /// Advances `state` by `action` and reports the work requested.
         public let transition: @Sendable (inout State, Action) -> Store.Effect<Action, Operation>
