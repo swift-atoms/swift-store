@@ -155,7 +155,9 @@ struct `Store.Effect Tests` {
                 }
             }
 
-            let expected: Store.Effect<Int, Job> = .merge([.send(1), .sequence([.send(2), .run(.load)])])
+            let expected: Store.Effect<Int, Job> = .merge([
+                .send(1), .sequence([.send(2), .run(.load)]),
+            ])
 
             #expect(mapped == expected)
         }
@@ -178,7 +180,9 @@ struct `Store.Effect Tests` {
             let lowered: Store.Effect<Action, Int> = effect.lower { operation in
                 operation == .load ? 0 : 1
             }
-            let expected: Store.Effect<Action, Int> = .sequence([.send(.first), .run(0), .merge([.run(1)])])
+            let expected: Store.Effect<Action, Int> = .sequence([
+                .send(.first), .run(0), .merge([.run(1)]),
+            ])
 
             #expect(lowered == expected)
         }

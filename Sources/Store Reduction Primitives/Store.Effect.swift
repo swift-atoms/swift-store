@@ -163,14 +163,16 @@ extension Store.Effect {
 
         case .merge(let effects):
             return .merge(
-                try effects.map { (effect: Self) throws(Failure) -> Store.Effect<Other, Operation> in
+                try effects.map {
+                    (effect: Self) throws(Failure) -> Store.Effect<Other, Operation> in
                     try effect.map(action: transform)
                 }
             )
 
         case .sequence(let effects):
             return .sequence(
-                try effects.map { (effect: Self) throws(Failure) -> Store.Effect<Other, Operation> in
+                try effects.map {
+                    (effect: Self) throws(Failure) -> Store.Effect<Other, Operation> in
                     try effect.map(action: transform)
                 }
             )
