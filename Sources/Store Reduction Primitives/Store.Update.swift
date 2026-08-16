@@ -58,7 +58,8 @@ extension Store {
         ///
         /// - Parameter transition: Advances state in place and returns the work requested.
         public init(
-            _ transition: @escaping @Sendable (inout State, Action) -> Store.Effect<Action, Operation>
+            _ transition:
+                @escaping @Sendable (inout State, Action) -> Store.Effect<Action, Operation>
         ) {
             self.transition = transition
         }
@@ -79,7 +80,10 @@ extension Store.Update {
     ///   - state: The state to advance, in place.
     /// - Returns: The work the update asks for.
     @inlinable
-    public func effect(for action: Action, in state: inout State) -> Store.Effect<Action, Operation> {
+    public func effect(
+        for action: Action,
+        in state: inout State
+    ) -> Store.Effect<Action, Operation> {
         transition(&state, action)
     }
 }

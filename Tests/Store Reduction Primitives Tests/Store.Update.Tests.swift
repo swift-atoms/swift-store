@@ -110,7 +110,10 @@ struct `Store.Update Tests` {
 
                 let directEffect = counter.effect(for: action, in: &direct)
                 let leadingEffect = empty.combined(with: counter).effect(for: action, in: &leading)
-                let trailingEffect = counter.combined(with: empty).effect(for: action, in: &trailing)
+                let trailingEffect = counter.combined(with: empty).effect(
+                    for: action,
+                    in: &trailing
+                )
 
                 #expect(leading == direct)
                 #expect(trailing == direct)
@@ -147,7 +150,10 @@ struct `Store.Update Tests` {
             }
 
             var count = 0
-            _ = Store.Update([`Store.Update Tests`.counter, step]).effect(for: .increment, in: &count)
+            _ = Store.Update([`Store.Update Tests`.counter, step]).effect(
+                for: .increment,
+                in: &count
+            )
 
             #expect(count == 10)
         }
