@@ -25,7 +25,6 @@ struct `Store.Update Tests` {
         var resets: Int
     }
 
-    /// Advances a bare count and asks for a beacon on every increment.
     static let counter = Store.Update<Int, Counter, Job> { count, action in
         switch action {
         case .increment:
@@ -38,7 +37,6 @@ struct `Store.Update Tests` {
         }
     }
 
-    /// Lifts a counter update into the screen domain.
     static func lifted(
         _ update: Store.Update<Int, Counter, Job>
     ) -> Store.Update<Screen, Message, Job> {

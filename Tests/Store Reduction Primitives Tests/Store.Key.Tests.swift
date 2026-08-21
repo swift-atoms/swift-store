@@ -7,16 +7,12 @@ struct `Store.Key Tests` {
     @Suite struct `Edge Case` {}
     @Suite struct Integration {}
 
-    /// A downward value: the palette a subtree renders with.
     enum Palette {}
 
-    /// A downward command: a value whose type is a function.
     enum Dismiss {}
 
-    /// An upward aggregation over a free monoid.
     enum Warnings {}
 
-    /// An upward aggregation whose identity is not empty.
     enum Ceiling {}
 }
 

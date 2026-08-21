@@ -18,7 +18,6 @@ struct `Store.Effect Tests` {
 
     typealias Effect = Store.Effect<Action, Job>
 
-    /// Representative values covering every case, including nested groups.
     static let samples: [Effect] = [
         .none,
         .send(.first),
