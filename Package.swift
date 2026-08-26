@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "swift-store-primitives",
+    name: "swift-store",
     platforms: [
         .macOS(.v27),
         .iOS(.v27),
@@ -13,46 +13,46 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "Store Reduction Primitives",
-            targets: ["Store Reduction Primitives"]
+            name: "Store Reduction",
+            targets: ["Store Reduction"]
         ),
         .library(
-            name: "Store Reduction Primitives Test Support",
-            targets: ["Store Reduction Primitives Test Support"]
+            name: "Store Reduction Test Support",
+            targets: ["Store Reduction Test Support"]
         ),
     ],
     dependencies: [
         .package(
-            url: "https://github.com/swift-primitives/swift-algebra-primitives.git",
+            url: "https://github.com/swift-molecules/swift-algebra.git",
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-primitives/swift-optic-primitives.git",
+            url: "https://github.com/swift-molecules/swift-optic.git",
             branch: "main"
         ),
     ],
     targets: [
         .target(
-            name: "Store Reduction Primitives",
+            name: "Store Reduction",
             dependencies: [
-                .product(name: "Algebra Monoid Primitives", package: "swift-algebra-primitives"),
-                .product(name: "Optic Primitives", package: "swift-optic-primitives"),
+                .product(name: "Algebra Monoid", package: "swift-algebra"),
+                .product(name: "Optic", package: "swift-optic"),
             ]
         ),
         .target(
-            name: "Store Reduction Primitives Test Support",
+            name: "Store Reduction Test Support",
             dependencies: [
-                "Store Reduction Primitives",
-                .product(name: "Algebra Monoid Primitives", package: "swift-algebra-primitives"),
-                .product(name: "Optic Primitives", package: "swift-optic-primitives"),
+                "Store Reduction",
+                .product(name: "Algebra Monoid", package: "swift-algebra"),
+                .product(name: "Optic", package: "swift-optic"),
             ],
             path: "Tests/Support"
         ),
         .testTarget(
-            name: "Store Reduction Primitives Tests",
+            name: "Store Reduction Tests",
             dependencies: [
-                "Store Reduction Primitives",
-                "Store Reduction Primitives Test Support",
+                "Store Reduction",
+                "Store Reduction Test Support",
             ]
         ),
     ],

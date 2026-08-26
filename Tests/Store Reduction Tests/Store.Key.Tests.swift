@@ -1,4 +1,4 @@
-import Store_Reduction_Primitives_Test_Support
+import Store_Reduction_Test_Support
 import Testing
 
 @Suite

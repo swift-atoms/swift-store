@@ -1,4 +1,4 @@
-public import Algebra_Monoid_Primitives
+public import Algebra_Monoid
 
 extension Store {
 

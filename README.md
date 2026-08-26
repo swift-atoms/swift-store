@@ -1,4 +1,4 @@
-# swift-store-primitives
+# swift-store
 
 ![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
 
@@ -23,7 +23,7 @@ The pure reduction algebra of the state architecture — the update that advance
 An update advances state and describes what it wants done. Composing and scoping updates is how a feature becomes part of a larger one:
 
 ```swift
-import Store_Reduction_Primitives
+import Store_Reduction
 
 enum Counter: Equatable { case increment, decrement }
 enum Job: Equatable { case beacon }
@@ -60,7 +60,7 @@ let both = Store.Effect<Counter, Job>.run(.beacon)
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/swift-primitives/swift-store-primitives.git", branch: "main")
+    .package(url: "https://github.com/swift-molecules/swift-store.git", branch: "main")
 ]
 ```
 
@@ -68,7 +68,7 @@ dependencies: [
 .target(
     name: "YourTarget",
     dependencies: [
-        .product(name: "Store Reduction Primitives", package: "swift-store-primitives")
+        .product(name: "Store Reduction", package: "swift-store")
     ]
 )
 ```
@@ -83,11 +83,11 @@ Two library products over a single source module.
 
 | Product | When to import |
 |---------|----------------|
-| `Store Reduction Primitives` | Declaring updates, effects, and communication keys in library or application code. |
-| `Store Reduction Primitives Test Support` | Test targets exercising reductions; re-exports the main module alongside `Algebra Monoid Primitives` and `Optic Primitives`. |
+| `Store Reduction` | Declaring updates, effects, and communication keys in library or application code. |
+| `Store Reduction Test Support` | Test targets exercising reductions; re-exports the main module alongside `Algebra Monoid` and `Optic`. |
 
-The module is named `Store Reduction Primitives` rather than `Store Primitives` because
-[swift-storage-primitives](https://github.com/swift-primitives/swift-storage-primitives) already
+The module is named `Store Reduction` rather than `Store Primitives` because
+[swift-storage](https://github.com/swift-molecules/swift-storage) already
 publishes a `Store Primitives` product for the physical element-store substrate, and both
 packages appear in the same dependency closure.
 
@@ -101,7 +101,7 @@ Key types in the `Store` namespace:
 | `Store.Key.Aggregate` | A typed key whose contributions travel up and combine under a monoid. |
 
 The runtime that interprets these values — the store itself, feature lifecycle, isolation, and
-test support — lives in [swift-stores](https://github.com/swift-foundations/swift-stores).
+test support — lives in [swift-stores](https://github.com/swift-compositions/swift-stores).
 
 ---
 
