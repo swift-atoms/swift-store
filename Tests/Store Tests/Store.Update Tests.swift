@@ -1,18 +1,11 @@
-import Store_Reduction_Test_Support
+import Store
 import Testing
 
 @Suite
 struct `Store.Update Tests` {
-    @Suite struct Integration {}
-
     enum Counter: Equatable, Sendable {
         case increment
         case decrement
-    }
-
-    enum Message: Equatable, Sendable {
-        case counter(Counter)
-        case reset
     }
 
     enum Job: Equatable, Sendable {
@@ -20,12 +13,7 @@ struct `Store.Update Tests` {
         case audit
     }
 
-    struct Screen: Equatable, Sendable {
-        var count: Int
-        var resets: Int
-    }
-
-    static let counter = Store.Update<Int, Counter, Job> { count, action in
+    static let counter = Store::Store.Update<Int, Counter, Job> { count, action in
         switch action {
         case .increment:
             count += 1
@@ -37,31 +25,13 @@ struct `Store.Update Tests` {
         }
     }
 
-    static func lifted(
-        _ update: Store.Update<Int, Counter, Job>
-    ) -> Store.Update<Screen, Message, Job> {
-        update.lift(
-            state: Optic.Lens<Screen, Int>(
-                get: { screen in screen.count },
-                set: { screen, count in Screen(count: count, resets: screen.resets) }
-            ),
-            action: Optic.Prism<Message, Counter>(
-                embed: Message.counter,
-                extract: { message in
-                    guard case .counter(let action) = message else { return nil }
-                    return action
-                }
-            )
-        )
-    }
-
     @Suite
     struct Unit {
 
         @Test
         func `empty changes nothing and asks for nothing`() {
             var count = 7
-            let effect = Store.Update<Int, Counter, Job>.empty.effect(for: .increment, in: &count)
+            let effect = Store::Store.Update<Int, Counter, Job>.empty.effect(for: .increment, in: &count)
 
             #expect(count == 7)
             #expect(effect == .none)
@@ -99,7 +69,7 @@ struct `Store.Update Tests` {
         @Test
         func `empty is a two-sided identity for combining`() {
             let counter = `Store.Update Tests`.counter
-            let empty = Store.Update<Int, Counter, Job>.empty
+            let empty = Store::Store.Update<Int, Counter, Job>.empty
 
             for action in [Counter.increment, .decrement] {
                 var direct = 3
@@ -122,7 +92,7 @@ struct `Store.Update Tests` {
 
         @Test
         func `combining is associative`() {
-            let step = Store.Update<Int, Counter, Job> { count, _ in
+            let step = Store::Store.Update<Int, Counter, Job> { count, _ in
                 count *= 2
                 return .run(.audit)
             }
@@ -142,50 +112,18 @@ struct `Store.Update Tests` {
 
         @Test
         func `an array of updates applies every element in order`() {
-            let step = Store.Update<Int, Counter, Job> { count, _ in
+            let step = Store::Store.Update<Int, Counter, Job> { count, _ in
                 count *= 10
                 return .none
             }
 
             var count = 0
-            _ = Store.Update([`Store.Update Tests`.counter, step]).effect(
+            _ = Store::Store.Update([`Store.Update Tests`.counter, step]).effect(
                 for: .increment,
                 in: &count
             )
 
             #expect(count == 10)
-        }
-
-        @Test
-        func `lifting advances the nested state`() {
-            let screen = `Store.Update Tests`.lifted(`Store.Update Tests`.counter)
-
-            var state = Screen(count: 4, resets: 1)
-            _ = screen.effect(for: .counter(.increment), in: &state)
-
-            #expect(state == Screen(count: 5, resets: 1))
-        }
-
-        @Test
-        func `lifting embeds the child actions of the effect`() {
-            let sending = Store.Update<Int, Counter, Job> { _, _ in .send(.decrement) }
-            let screen = `Store.Update Tests`.lifted(sending)
-
-            var state = Screen(count: 0, resets: 0)
-            let effect = screen.effect(for: .counter(.increment), in: &state)
-
-            #expect(effect == .send(.counter(.decrement)))
-        }
-
-        @Test
-        func `lifting ignores an unrecognised message`() {
-            let screen = `Store.Update Tests`.lifted(`Store.Update Tests`.counter)
-
-            var state = Screen(count: 4, resets: 1)
-            let effect = screen.effect(for: .reset, in: &state)
-
-            #expect(state == Screen(count: 4, resets: 1))
-            #expect(effect == .none)
         }
 
         @Test
@@ -213,36 +151,11 @@ struct `Store.Update Tests` {
         @Test
         func `an empty array of updates is the empty update`() {
             var count = 9
-            let effect = Store.Update<Int, Counter, Job>([]).effect(for: .increment, in: &count)
+            let effect = Store::Store.Update<Int, Counter, Job>([]).effect(for: .increment, in: &count)
 
             #expect(count == 9)
             #expect(effect == .none)
         }
 
-        @Test
-        func `lifting an update that asks for nothing asks for nothing`() {
-            let quiet = Store.Update<Int, Counter, Job> { count, _ in
-                count += 1
-                return .none
-            }
-            let screen = `Store.Update Tests`.lifted(quiet)
-
-            var state = Screen(count: 0, resets: 0)
-            let effect = screen.effect(for: .counter(.increment), in: &state)
-
-            #expect(state.count == 1)
-            #expect(effect == .none)
-        }
-
-        @Test
-        func `lifting writes the nested state back and leaves the rest alone`() {
-            let screen = `Store.Update Tests`.lifted(`Store.Update Tests`.counter)
-
-            var state = Screen(count: 0, resets: 3)
-            _ = screen.effect(for: .counter(.decrement), in: &state)
-
-            #expect(state.count == -1)
-            #expect(state.resets == 3)
-        }
     }
 }
