@@ -1,5 +1,5 @@
-public import Algebra_Monoid_Primitives
-public import Optic_Primitives
+public import Algebra_Monoid
+public import Optic
 
 extension Store {
 
