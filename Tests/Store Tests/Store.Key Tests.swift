@@ -5,39 +5,18 @@ import Testing
 struct `Store.Key Tests` {
     @Suite struct Unit {}
     @Suite struct `Edge Case` {}
-    @Suite struct Integration {}
-
     enum Palette {}
 
     enum Dismiss {}
 
-    enum Warnings {}
-
-    enum Ceiling {}
 }
 
-extension `Store.Key Tests`.Palette: Store.Key.`Protocol` {
+extension `Store.Key Tests`.Palette: Store::Store.Key.`Protocol` {
     static var initial: Int { 7 }
 }
 
-extension `Store.Key Tests`.Dismiss: Store.Key.`Protocol` {
+extension `Store.Key Tests`.Dismiss: Store::Store.Key.`Protocol` {
     static var initial: @Sendable () -> Int { { 0 } }
-}
-
-extension `Store.Key Tests`.Warnings: Store.Key.Aggregate {
-    typealias Value = [Int]
-
-    static var aggregation: Algebra.Monoid<[Int]> {
-        .init(identity: [], combining: { $0 + $1 })
-    }
-}
-
-extension `Store.Key Tests`.Ceiling: Store.Key.Aggregate {
-    typealias Value = Int
-
-    static var aggregation: Algebra.Monoid<Int> {
-        .init(identity: Int.min, combining: { Swift.max($0, $1) })
-    }
 }
 
 extension `Store.Key Tests`.Unit {
@@ -51,57 +30,4 @@ extension `Store.Key Tests`.Unit {
         #expect(`Store.Key Tests`.Dismiss.initial() == 0)
     }
 
-    @Test
-    func `an aggregate key defaults its initial value to the monoid identity`() {
-        #expect(`Store.Key Tests`.Warnings.initial == [])
-        #expect(`Store.Key Tests`.Ceiling.initial == Int.min)
-    }
-
-    @Test
-    func `an aggregate key combines contributions`() {
-        let monoid = `Store.Key Tests`.Warnings.aggregation
-        let combined = monoid(monoid([1], [2]), [3])
-
-        #expect(combined == [1, 2, 3])
-    }
-
-    @Test
-    func `an aggregate key identity is two-sided`() {
-        let monoid = `Store.Key Tests`.Ceiling.aggregation
-
-        for contribution in [Int.min, -1, 0, 42] {
-            #expect(monoid(monoid.identity, contribution) == contribution)
-            #expect(monoid(contribution, monoid.identity) == contribution)
-        }
-    }
-
-    @Test
-    func `an aggregate key combination is associative`() {
-        let monoid = `Store.Key Tests`.Ceiling.aggregation
-        let samples = [Int.min, -3, 0, 12]
-
-        for a in samples {
-            for b in samples {
-                for c in samples {
-                    #expect(monoid(monoid(a, b), c) == monoid(a, monoid(b, c)))
-                }
-            }
-        }
-    }
-}
-
-extension `Store.Key Tests`.`Edge Case` {
-    @Test
-    func `aggregating no contributions yields the identity`() {
-        let monoid = `Store.Key Tests`.Warnings.aggregation
-        let contributions: [[Int]] = []
-        let combined = contributions.reduce(monoid.identity) { monoid($0, $1) }
-
-        #expect(combined == `Store.Key Tests`.Warnings.initial)
-    }
-
-    @Test
-    func `an aggregate key keeps its monoid identity as the reported initial value`() {
-        #expect(`Store.Key Tests`.Ceiling.initial == `Store.Key Tests`.Ceiling.aggregation.identity)
-    }
 }

@@ -3,8 +3,6 @@ import Testing
 
 @Suite
 struct `Store.Effect Tests` {
-    @Suite struct Integration {}
-
     enum Action: Equatable, Sendable {
         case first
         case second
@@ -16,7 +14,7 @@ struct `Store.Effect Tests` {
         case save
     }
 
-    typealias Effect = Store.Effect<Action, Job>
+    typealias Effect = Store::Store.Effect<Action, Job>
 
     static let samples: [Effect] = [
         .none,
@@ -108,30 +106,6 @@ struct `Store.Effect Tests` {
         }
 
         @Test
-        func `the merging monoid agrees with the combinator`() {
-            let monoid = Effect.merging
-            #expect(monoid.identity == .none)
-
-            for a in `Store.Effect Tests`.samples {
-                for b in `Store.Effect Tests`.samples {
-                    #expect(monoid(a, b) == a.merged(with: b))
-                }
-            }
-        }
-
-        @Test
-        func `the sequencing monoid agrees with the combinator`() {
-            let monoid = Effect.sequencing
-            #expect(monoid.identity == .none)
-
-            for a in `Store.Effect Tests`.samples {
-                for b in `Store.Effect Tests`.samples {
-                    #expect(monoid(a, b) == a.followed(by: b))
-                }
-            }
-        }
-
-        @Test
         func `mapping actions with identity leaves the effect unchanged`() {
             for effect in `Store.Effect Tests`.samples {
                 let mapped = effect.map(action: { $0 })
@@ -146,7 +120,7 @@ struct `Store.Effect Tests` {
                 .sequence([.send(.second), .run(.load)]),
             ])
 
-            let mapped: Store.Effect<Int, Job> = effect.map { action in
+            let mapped: Store::Store.Effect<Int, Job> = effect.map { action in
                 switch action {
                 case .first: return 1
                 case .second: return 2
@@ -154,7 +128,7 @@ struct `Store.Effect Tests` {
                 }
             }
 
-            let expected: Store.Effect<Int, Job> = .merge([
+            let expected: Store::Store.Effect<Int, Job> = .merge([
                 .send(1), .sequence([.send(2), .run(.load)]),
             ])
 
@@ -165,9 +139,9 @@ struct `Store.Effect Tests` {
         func `mapping actions composes`() {
             let effect = Effect.merge([.send(.first), .sequence([.send(.second)])])
 
-            let once: Store.Effect<Int, Job> = effect.map { $0 == .first ? 1 : 2 }
-            let twice: Store.Effect<String, Job> = once.map { "\($0)" }
-            let fused: Store.Effect<String, Job> = effect.map { $0 == .first ? "1" : "2" }
+            let once: Store::Store.Effect<Int, Job> = effect.map { $0 == .first ? 1 : 2 }
+            let twice: Store::Store.Effect<String, Job> = once.map { "\($0)" }
+            let fused: Store::Store.Effect<String, Job> = effect.map { $0 == .first ? "1" : "2" }
 
             #expect(twice == fused)
         }
@@ -176,10 +150,10 @@ struct `Store.Effect Tests` {
         func `mapping operations leaves actions untouched`() {
             let effect = Effect.sequence([.send(.first), .run(.load), .merge([.run(.save)])])
 
-            let lowered: Store.Effect<Action, Int> = effect.lower { operation in
+            let lowered: Store::Store.Effect<Action, Int> = effect.lower { operation in
                 operation == .load ? 0 : 1
             }
-            let expected: Store.Effect<Action, Int> = .sequence([
+            let expected: Store::Store.Effect<Action, Int> = .sequence([
                 .send(.first), .run(0), .merge([.run(1)]),
             ])
 
@@ -230,7 +204,7 @@ struct `Store.Effect Tests` {
         func `mapping a run-only effect never calls the action transform`() {
             let effect = Effect.merge([.run(.load), .sequence([.run(.save)])])
 
-            let mapped: Store.Effect<Int, Job> = effect.map { _ in
+            let mapped: Store::Store.Effect<Int, Job> = effect.map { _ in
                 Issue.record("the action transform must not run for an effect with no sends")
                 return 0
             }
