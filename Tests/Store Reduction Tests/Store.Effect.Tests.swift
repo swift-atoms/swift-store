@@ -1,4 +1,4 @@
-import Store
+import Store_Reduction_Test_Support
 import Testing
 
 @Suite
@@ -105,6 +105,30 @@ struct `Store.Effect Tests` {
             let sequenced = inner.followed(by: .run(.load))
 
             #expect(sequenced == .sequence([inner, .run(.load)]))
+        }
+
+        @Test
+        func `the merging monoid agrees with the combinator`() {
+            let monoid = Effect.merging
+            #expect(monoid.identity == .none)
+
+            for a in `Store.Effect Tests`.samples {
+                for b in `Store.Effect Tests`.samples {
+                    #expect(monoid(a, b) == a.merged(with: b))
+                }
+            }
+        }
+
+        @Test
+        func `the sequencing monoid agrees with the combinator`() {
+            let monoid = Effect.sequencing
+            #expect(monoid.identity == .none)
+
+            for a in `Store.Effect Tests`.samples {
+                for b in `Store.Effect Tests`.samples {
+                    #expect(monoid(a, b) == a.followed(by: b))
+                }
+            }
         }
 
         @Test

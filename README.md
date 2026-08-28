@@ -11,9 +11,9 @@ The pure reduction algebra of the state architecture — the update that advance
 - **A total update** — `Store.Update` advances state in place and returns the work it wants done. It does not throw: a failure the domain cares about is an action fed back into the store, which is what keeps a reduction replayable.
 - **Effects as data** — `Store.Effect` is a five-case value, not a computation. Producing one performs nothing.
 - **The work leaf is yours** — the effect's `Operation` type is a generic parameter this package never inspects, so the runtime decides what work means. Cancellation is an operation like any other and needs no case of its own.
-- **Composition with laws, not conventions** — merging and sequencing are associative with `none` as a two-sided identity, verified as laws rather than asserted in prose. The `Algebra.Monoid` witnesses live in [swift-store-algebra](https://github.com/swift-molecules/swift-store-algebra).
-- **Scoping without reflection** — `optional` moves an update over optional state; `lift(state:action:)`, which scopes an update into a wider domain through an `Optic.Lens` and `Optic.Prism`, lives in [swift-store-optic](https://github.com/swift-molecules/swift-store-optic).
-- **Typed communication keys** — `Store.Key.Protocol` names a value travelling downward; `Store.Key.Aggregate`, the key whose contributions combine under a monoid, lives in [swift-store-algebra](https://github.com/swift-molecules/swift-store-algebra). The conforming type is the address, so nothing is matched by name or by reflection.
+- **Composition with laws, not conventions** — merging and sequencing each form a monoid with `none` as identity, published as `Algebra.Monoid` witnesses and verified as laws rather than asserted in prose.
+- **Scoping without reflection** — `lift(state:action:)` moves an update into a wider domain, taking an `Optic.Lens` onto the wider state and an `Optic.Prism` onto the wider message. A message the prism does not recognise leaves the state untouched. Scoping *is* a lens and a prism, so it is spelled with the ecosystem's optics rather than re-stating them as loose functions.
+- **Typed communication keys** — `Store.Key.Protocol` names a value travelling downward; `Store.Key.Aggregate` adds the monoid that combines contributions travelling upward. The conforming type is the address, so nothing is matched by name or by reflection.
 - **Deployable where reflection is not** — no reflection, no Objective-C interop, no metatype identity, no Foundation, no locks.
 
 ---
@@ -23,7 +23,7 @@ The pure reduction algebra of the state architecture — the update that advance
 An update advances state and describes what it wants done. Composing and scoping updates is how a feature becomes part of a larger one:
 
 ```swift
-import Store
+import Store_Reduction
 
 enum Counter: Equatable { case increment, decrement }
 enum Job: Equatable { case beacon }
@@ -68,7 +68,7 @@ dependencies: [
 .target(
     name: "YourTarget",
     dependencies: [
-        .product(name: "Store", package: "swift-store")
+        .product(name: "Store Reduction", package: "swift-store")
     ]
 )
 ```
@@ -79,15 +79,17 @@ Requires Swift 6.3.3. Platform minimums: macOS 26, iOS 26, tvOS 26, watchOS 26, 
 
 ## Architecture
 
-Three library products in the canonical atom shape.
+Two library products over a single source module.
 
 | Product | When to import |
 |---------|----------------|
-| `Store` | Declaring updates, effects, and communication keys in library or application code. |
-| `Store Standard Library Integration` | Conformances and extensions integrating `Store` with the Swift standard library. |
-| `Store Apple Foundation Integration` | Integration with Apple Foundation; the only module that imports Foundation. |
+| `Store Reduction` | Declaring updates, effects, and communication keys in library or application code. |
+| `Store Reduction Test Support` | Test targets exercising reductions; re-exports the main module alongside `Algebra Monoid` and `Optic`. |
 
-Integration with `Algebra Monoid` lives in [swift-store-algebra](https://github.com/swift-molecules/swift-store-algebra); integration with `Optic` lives in [swift-store-optic](https://github.com/swift-molecules/swift-store-optic).
+The module is named `Store Reduction` rather than `Store Primitives` because
+[swift-storage](https://github.com/swift-molecules/swift-storage) already
+publishes a `Store Primitives` product for the physical element-store substrate, and both
+packages appear in the same dependency closure.
 
 Key types in the `Store` namespace:
 
@@ -96,6 +98,7 @@ Key types in the `Store` namespace:
 | `Store.Update` | Advances state in place by one action and returns the work requested. |
 | `Store.Effect` | The description of that work: `none`, `send`, `run`, `merge`, `sequence`. |
 | `Store.Key.\`Protocol\`` | A typed key naming a value that travels down the store tree — including a command, which is a value whose type is a function. |
+| `Store.Key.Aggregate` | A typed key whose contributions travel up and combine under a monoid. |
 
 The runtime that interprets these values — the store itself, feature lifecycle, isolation, and
 test support — lives in [swift-stores](https://github.com/swift-compositions/swift-stores).

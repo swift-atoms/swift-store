@@ -13,38 +13,47 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "Store",
-            targets: ["Store"]
+            name: "Store Reduction",
+            targets: ["Store Reduction"]
         ),
         .library(
-            name: "Store Standard Library Integration",
-            targets: ["Store Standard Library Integration"]
-        ),
-        .library(
-            name: "Store Apple Foundation Integration",
-            targets: ["Store Apple Foundation Integration"]
+            name: "Store Reduction Test Support",
+            targets: ["Store Reduction Test Support"]
         ),
     ],
-    dependencies: [],
+    dependencies: [
+        .package(
+            url: "https://github.com/swift-molecules/swift-algebra.git",
+            branch: "main"
+        ),
+        .package(
+            url: "https://github.com/swift-molecules/swift-optic.git",
+            branch: "main"
+        ),
+    ],
     targets: [
         .target(
-            name: "Store",
-            dependencies: []
-        ),
-        .target(
-            name: "Store Standard Library Integration",
-            dependencies: ["Store"]
-        ),
-        .target(
-            name: "Store Apple Foundation Integration",
+            name: "Store Reduction",
             dependencies: [
-                "Store",
-                "Store Standard Library Integration",
+                .product(name: "Algebra Monoid", package: "swift-algebra"),
+                .product(name: "Optic", package: "swift-optic"),
             ]
         ),
+        .target(
+            name: "Store Reduction Test Support",
+            dependencies: [
+                "Store Reduction",
+                .product(name: "Algebra Monoid", package: "swift-algebra"),
+                .product(name: "Optic", package: "swift-optic"),
+            ],
+            path: "Tests/Support"
+        ),
         .testTarget(
-            name: "Store Tests",
-            dependencies: ["Store"]
+            name: "Store Reduction Tests",
+            dependencies: [
+                "Store Reduction",
+                "Store Reduction Test Support",
+            ]
         ),
     ],
     swiftLanguageModes: [.v6]

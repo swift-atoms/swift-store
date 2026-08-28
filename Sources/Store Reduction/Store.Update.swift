@@ -1,3 +1,6 @@
+public import Algebra_Monoid
+public import Optic
+
 extension Store {
 
     @frozen
@@ -41,12 +44,29 @@ extension Store.Update {
         }
     }
 
+    public static var combining: Algebra.Monoid<Self> {
+        .init(identity: .empty, combining: { $0.combined(with: $1) })
+    }
+
     public init(_ updates: [Self]) {
         self = updates.reduce(Self.empty) { $0.combined(with: $1) }
     }
 }
 
 extension Store.Update {
+
+    public func lift<Whole, Message>(
+        state: Optic.Lens<Whole, State>,
+        action: Optic.Prism<Message, Action>
+    ) -> Store.Update<Whole, Message, Operation> {
+        .init { whole, message in
+            guard let inner = action.extract(message) else { return .none }
+            var part = state.get(whole)
+            let effect = self.transition(&part, inner)
+            whole = state.set(whole, part)
+            return effect.map(action: action.embed)
+        }
+    }
 
     public var optional: Store.Update<State?, Action, Operation> {
         .init { state, action in
