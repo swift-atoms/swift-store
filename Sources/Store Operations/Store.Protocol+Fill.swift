@@ -1,7 +1,16 @@
 public import Store_Protocol
 public import Index
-import Affine_Standard_Library_Integration
-import Ordinal_Standard_Library_Integration
+public import Affine_Standard_Library_Integration
+public import Affine_Tagged
+public import Cardinal
+public import Cardinal_Carrier
+public import Cardinal_Tagged
+public import Ordinal
+public import Ordinal_Protocol
+public import Ordinal_Cardinal
+public import Ordinal_Standard_Library_Integration
+public import Ordinal_Tagged
+public import Tagged
 
 extension __StoreProtocol where Self: ~Copyable, Element: Copyable {
 
