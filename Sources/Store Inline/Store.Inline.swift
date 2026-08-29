@@ -1,4 +1,7 @@
-import Index
+public import Affine_Standard_Library_Integration
+public import Affine_Tagged
+public import Index
+public import Ordinal_Standard_Library_Integration
 public import Store_Initialization
 public import Store
 

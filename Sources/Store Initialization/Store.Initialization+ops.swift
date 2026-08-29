@@ -1,10 +1,16 @@
+public import Cardinal_Carrier
 public import Index
+public import Ordinal
+public import Ordinal_Protocol
+public import Ordinal_Standard_Library_Integration
+public import Ordinal_Tagged
 public import Store
+public import Tagged
 
 extension Store::Store.Initialization where Element: ~Copyable & ~Escapable {
 
     @inlinable
-    public var count: Index.Index<Element>.Count {
+    public var count: Index::Index<Element>.Count {
         switch self {
         case .empty:
             return .zero

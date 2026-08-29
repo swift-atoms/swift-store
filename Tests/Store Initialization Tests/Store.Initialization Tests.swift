@@ -1,6 +1,16 @@
+import Cardinal
+import Cardinal_Carrier
+import Cardinal_Tagged
+import Index
+import Ordinal
+import Ordinal_Protocol
+import Ordinal_Standard_Library_Integration
+import Ordinal_Tagged
 import Store
 import Store_Initialization
 import Store_Test_Support
+import Tagged
+import Tagged_Standard_Library_Integration
 import Testing
 
 @Suite

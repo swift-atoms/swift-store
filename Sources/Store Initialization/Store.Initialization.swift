@@ -1,5 +1,7 @@
 public import Index
+public import Ordinal
 public import Store
+public import Tagged
 
 extension Store::Store {
 

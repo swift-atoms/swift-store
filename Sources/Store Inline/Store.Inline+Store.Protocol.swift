@@ -1,9 +1,17 @@
-import Affine_Standard_Library_Integration
+public import Affine_Standard_Library_Integration
+public import Affine_Tagged
+public import Cardinal_Carrier
+public import Cardinal_Tagged
 public import Index
-import Ordinal_Standard_Library_Integration
+public import Ordinal
+public import Ordinal_Cardinal
+public import Ordinal_Protocol
+public import Ordinal_Standard_Library_Integration
+public import Ordinal_Tagged
 public import Store
 public import Store_Initialization
 public import Store_Protocol
+public import Tagged
 
 extension Store::Store.Inline where Element: ~Copyable {
 

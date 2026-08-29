@@ -1,8 +1,15 @@
+import Cardinal
+import Cardinal_Standard_Library_Integration
+import Cardinal_Tagged
 import Index
+import Ordinal
+import Ordinal_Protocol
+import Ordinal_Tagged
 import Store
 import Store_Initialization
 import Store_Ledgered
 import Store_Protocol
+import Tagged
 import Testing
 
 private struct TwoSlot: Store::Store.Ledgered.`Protocol` {

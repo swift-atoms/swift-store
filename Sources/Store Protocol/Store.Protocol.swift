@@ -1,5 +1,8 @@
 public import Index
+public import Ordinal
+public import Ordinal_Protocol
 public import Store
+public import Tagged
 
 public protocol __StoreProtocol: ~Copyable {
 
