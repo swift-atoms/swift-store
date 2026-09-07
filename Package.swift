@@ -13,13 +13,9 @@ let package = Package(
     ],
     products: [
         .library(name: "Store", targets: ["Store"]),
-        .library(name: "Store Protocol", targets: ["Store Protocol"]),
-        .library(name: "Store Operations", targets: ["Store Operations"]),
-        .library(name: "Store Initialization", targets: ["Store Initialization"]),
-        .library(name: "Store Ledgered", targets: ["Store Ledgered"]),
-        .library(name: "Store Inline", targets: ["Store Inline"]),
-        .library(name: "Store Split", targets: ["Store Split"]),
-        .library(name: "Store Generational", targets: ["Store Generational"]),
+        .library(name: "Store Standard Library Integration", targets: ["Store Standard Library Integration"]),
+        .library(name: "Store Foundation Library Integration", targets: ["Store Foundation Library Integration"]),
+        .library(name: "Store Test Support", targets: ["Store Test Support"]),
     ],
     dependencies: [
         .package(
@@ -27,7 +23,7 @@ let package = Package(
             branch: "main"
         ),
         .package(
-            url: "https://github.com/swift-atoms/swift-affine.git",
+            url: "https://github.com/swift-atoms/swift-difference.git",
             branch: "main"
         ),
         .package(
@@ -46,113 +42,30 @@ let package = Package(
     targets: [
         .target(
             name: "Store",
-            dependencies: []
-        ),
-        .target(
-            name: "Store Protocol",
             dependencies: [
-                .target(name: "Store"),
                 .product(name: "Index", package: "swift-index"),
                 .product(name: "Ordinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Protocol", package: "swift-ordinal"),
                 .product(name: "Tagged", package: "swift-tagged"),
-            ]
-        ),
-        .target(
-            name: "Store Operations",
-            dependencies: [
-                .target(name: "Store Protocol"),
-                .product(name: "Index", package: "swift-index"),
-                .product(name: "Affine Arithmetic", package: "swift-affine"),
-                .product(
-                    name: "Affine Standard Library Integration",
-                    package: "swift-affine"
-                ),
-                .product(name: "Affine Tagged", package: "swift-affine"),
+                .product(name: "Difference", package: "swift-difference"),
                 .product(name: "Cardinal", package: "swift-cardinal"),
-                .product(name: "Cardinal Carrier", package: "swift-cardinal"),
-                .product(name: "Cardinal Tagged", package: "swift-cardinal"),
-                .product(
-                    name: "Ordinal Standard Library Integration",
-                    package: "swift-ordinal"
-                ),
-                .product(name: "Ordinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Cardinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Protocol", package: "swift-ordinal"),
-                .product(name: "Ordinal Tagged", package: "swift-ordinal"),
-                .product(name: "Tagged", package: "swift-tagged"),
-            ]
-        ),
-        .target(
-            name: "Store Initialization",
-            dependencies: [
-                .target(name: "Store"),
-                .product(name: "Index", package: "swift-index"),
-                .product(name: "Cardinal Carrier", package: "swift-cardinal"),
-                .product(name: "Cardinal Tagged", package: "swift-cardinal"),
-                .product(name: "Ordinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Cardinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Protocol", package: "swift-ordinal"),
-                .product(
-                    name: "Ordinal Standard Library Integration",
-                    package: "swift-ordinal"
-                ),
-                .product(name: "Ordinal Tagged", package: "swift-ordinal"),
-                .product(name: "Tagged", package: "swift-tagged"),
-            ]
-        ),
-        .target(
-            name: "Store Ledgered",
-            dependencies: [
-                .target(name: "Store"),
-                .target(name: "Store Protocol"),
-                .target(name: "Store Initialization"),
-            ]
-        ),
-        .target(
-            name: "Store Inline",
-            dependencies: [
-                .target(name: "Store"),
-                .target(name: "Store Protocol"),
-                .target(name: "Store Initialization"),
-                .target(name: "Store Ledgered"),
-                .product(name: "Index", package: "swift-index"),
-                .product(
-                    name: "Affine Standard Library Integration",
-                    package: "swift-affine"
-                ),
-                .product(
-                    name: "Ordinal Standard Library Integration",
-                    package: "swift-ordinal"
-                ),
-                .product(name: "Cardinal Carrier", package: "swift-cardinal"),
-                .product(name: "Ordinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Protocol", package: "swift-ordinal"),
-                .product(
-                    name: "Ordinal Standard Library Integration",
-                    package: "swift-ordinal"
-                ),
-                .product(name: "Ordinal Tagged", package: "swift-ordinal"),
-                .product(name: "Tagged", package: "swift-tagged"),
+                .product(name: "Ordinal Standard Library Integration", package: "swift-ordinal"),
             ],
-            swiftSettings: [
-                .enableExperimentalFeature("RawLayout")
-            ]
+            path: "Sources/Store"
         ),
         .target(
-            name: "Store Split",
+            name: "Store Standard Library Integration",
             dependencies: [
                 .target(name: "Store"),
-                .target(name: "Store Protocol"),
-                .product(name: "Index", package: "swift-index"),
-                .product(name: "Ordinal Protocol", package: "swift-ordinal"),
-            ]
+            ],
+            path: "Sources/Store Standard Library Integration"
         ),
         .target(
-            name: "Store Generational",
+            name: "Store Foundation Library Integration",
             dependencies: [
                 .target(name: "Store"),
-            ]
+                .target(name: "Store Standard Library Integration"),
+            ],
+            path: "Sources/Store Foundation Library Integration"
         ),
         .target(
             name: "Store Test Support",
@@ -160,116 +73,32 @@ let package = Package(
                 .target(name: "Store"),
                 .product(name: "Index Test Support", package: "swift-index"),
             ],
-            path: "Tests/Store Support"
+            path: "Tests/Support"
         ),
         .testTarget(
             name: "Store Tests",
             dependencies: [
                 .target(name: "Store"),
-            ]
-        ),
-        .testTarget(
-            name: "Store Protocol Tests",
-            dependencies: [
-                .target(name: "Store Protocol"),
                 .target(name: "Store Test Support"),
-                .product(
-                    name: "Affine Standard Library Integration",
-                    package: "swift-affine"
-                ),
-                .product(name: "Affine Tagged", package: "swift-affine"),
+                .product(name: "Difference", package: "swift-difference"),
                 .product(name: "Cardinal", package: "swift-cardinal"),
-                .product(
-                    name: "Cardinal Standard Library Integration",
-                    package: "swift-cardinal"
-                ),
+                .product(name: "Cardinal Standard Library Integration", package: "swift-cardinal"),
                 .product(name: "Index", package: "swift-index"),
                 .product(name: "Ordinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Protocol", package: "swift-ordinal"),
-                .product(
-                    name: "Ordinal Standard Library Integration",
-                    package: "swift-ordinal"
-                ),
+                .product(name: "Ordinal Standard Library Integration", package: "swift-ordinal"),
                 .product(name: "Tagged", package: "swift-tagged"),
-                .product(
-                    name: "Tagged Standard Library Integration",
-                    package: "swift-tagged"
-                ),
-            ]
-        ),
-        .testTarget(
-            name: "Store Initialization Tests",
-            dependencies: [
-                .target(name: "Store"),
-                .target(name: "Store Initialization"),
-                .target(name: "Store Test Support"),
-                .product(name: "Cardinal", package: "swift-cardinal"),
-                .product(name: "Cardinal Carrier", package: "swift-cardinal"),
-                .product(name: "Cardinal Tagged", package: "swift-cardinal"),
-                .product(name: "Index", package: "swift-index"),
-                .product(name: "Ordinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Protocol", package: "swift-ordinal"),
-                .product(
-                    name: "Ordinal Standard Library Integration",
-                    package: "swift-ordinal"
-                ),
-                .product(name: "Ordinal Tagged", package: "swift-ordinal"),
-                .product(name: "Tagged", package: "swift-tagged"),
-                .product(
-                    name: "Tagged Standard Library Integration",
-                    package: "swift-tagged"
-                ),
-            ]
-        ),
-        .testTarget(
-            name: "Store Ledgered Tests",
-            dependencies: [
-                .target(name: "Store Ledgered"),
-                .product(name: "Cardinal", package: "swift-cardinal"),
-                .product(
-                    name: "Cardinal Standard Library Integration",
-                    package: "swift-cardinal"
-                ),
-                .product(name: "Cardinal Tagged", package: "swift-cardinal"),
-                .product(name: "Index", package: "swift-index"),
-                .product(name: "Ordinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Protocol", package: "swift-ordinal"),
-                .product(name: "Ordinal Tagged", package: "swift-ordinal"),
-                .product(name: "Tagged", package: "swift-tagged"),
-            ]
-        ),
-        .testTarget(
-            name: "Store Inline Tests",
-            dependencies: [
-                .target(name: "Store"),
-                .target(name: "Store Initialization"),
-                .target(name: "Store Inline"),
-                .target(name: "Store Ledgered"),
-                .target(name: "Store Protocol"),
-                .product(name: "Cardinal", package: "swift-cardinal"),
-                .product(name: "Cardinal Carrier", package: "swift-cardinal"),
-                .product(name: "Cardinal Tagged", package: "swift-cardinal"),
-                .product(name: "Index", package: "swift-index"),
-                .product(name: "Ordinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Protocol", package: "swift-ordinal"),
-                .product(
-                    name: "Ordinal Standard Library Integration",
-                    package: "swift-ordinal"
-                ),
-                .product(name: "Ordinal Tagged", package: "swift-ordinal"),
-                .product(name: "Tagged", package: "swift-tagged"),
-                .product(
-                    name: "Tagged Standard Library Integration",
-                    package: "swift-tagged"
-                ),
-            ]
+                .product(name: "Tagged Standard Library Integration", package: "swift-tagged"),
+                .target(name: "Store Standard Library Integration"),
+                .target(name: "Store Foundation Library Integration"),
+            ],
+            path: "Tests/Store Tests"
         ),
     ],
     swiftLanguageModes: [.v6]
 )
 
-for target in package.targets where ![.system, .binary, .plugin, .macro].contains(target.type) {
-    let ecosystem: [SwiftSetting] = [
+for target in package.targets {
+    target.swiftSettings = [
         .strictMemorySafety(),
         .enableUpcomingFeature("ExistentialAny"),
         .enableUpcomingFeature("InternalImportsByDefault"),
@@ -277,7 +106,6 @@ for target in package.targets where ![.system, .binary, .plugin, .macro].contain
         .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
         .enableExperimentalFeature("Lifetimes"),
         .enableUpcomingFeature("InferIsolatedConformances"),
+        .enableExperimentalFeature("RawLayout"),
     ]
-
-    target.swiftSettings = (target.swiftSettings ?? []) + ecosystem
 }
