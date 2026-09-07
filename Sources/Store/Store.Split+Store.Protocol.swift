@@ -26,6 +26,17 @@ extension Store::Store.Split where Lanes: ~Copyable, Elements: ~Copyable {
     public mutating func move(at slot: Index<Elements.Element>) -> Elements.Element {
         _elements.move(at: slot)
     }
+
+    @inlinable
+    public mutating func swapAt(_ i: Index<Elements.Element>, _ j: Index<Elements.Element>) {
+        _elements.swapAt(i, j)
+    }
+
+    @inlinable
+    public mutating func unshare() {
+        _lanes.unshare()
+        _elements.unshare()
+    }
 }
 
 extension Store::Store.Split: Store::Store.`Protocol`
