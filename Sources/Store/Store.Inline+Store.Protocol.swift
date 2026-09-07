@@ -2,7 +2,6 @@ public import Difference
 public import Cardinal
 public import Index
 public import Ordinal
-public import Ordinal_Standard_Library_Integration
 public import Tagged
 
 extension Store::Store.Inline where Element: ~Copyable {

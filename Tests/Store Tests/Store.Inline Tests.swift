@@ -1,10 +1,8 @@
 import Cardinal
 import Index
 import Ordinal
-import Ordinal_Standard_Library_Integration
 import Store
 import Tagged
-import Tagged_Standard_Library_Integration
 import Testing
 
 private final class Item: @unchecked Sendable {

@@ -14,7 +14,7 @@ extension Store {
     }
 }
 
-extension Store.Update: Sendable {}
+extension Store.Update: Swift.Sendable {}
 
 extension Store.Update {
 

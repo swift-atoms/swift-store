@@ -1,4 +1,3 @@
-
 extension Store::Store {
 
     @frozen
@@ -28,4 +27,4 @@ extension Store::Store.Split where Lanes: ~Copyable, Elements: ~Copyable {
     public typealias Lane = Lanes.Element
 }
 
-extension Store::Store.Split: Copyable where Lanes: Copyable, Elements: Copyable {}
+extension Store::Store.Split: Swift.Copyable where Lanes: Swift.Copyable, Elements: Swift.Copyable {}

@@ -1,6 +1,6 @@
 public import Difference
 public import Index
-public import Ordinal_Standard_Library_Integration
+public import Ordinal
 
 extension Store::Store {
 

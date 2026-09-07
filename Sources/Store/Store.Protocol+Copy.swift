@@ -2,7 +2,6 @@ public import Index
 public import Difference
 public import Cardinal
 public import Ordinal
-public import Ordinal_Standard_Library_Integration
 public import Tagged
 
 extension __StoreProtocol where Self: ~Copyable, Element: Copyable {

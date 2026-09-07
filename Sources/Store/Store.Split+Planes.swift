@@ -1,4 +1,3 @@
-
 extension Store::Store.Split where Lanes: ~Copyable, Elements: ~Copyable {
 
     @inlinable

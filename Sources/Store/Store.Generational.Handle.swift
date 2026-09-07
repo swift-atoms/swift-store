@@ -1,4 +1,3 @@
-
 extension Store::Store.Generational {
 
     @frozen

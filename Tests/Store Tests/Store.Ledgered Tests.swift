@@ -1,5 +1,4 @@
 import Cardinal
-import Cardinal_Standard_Library_Integration
 import Index
 import Ordinal
 import Store

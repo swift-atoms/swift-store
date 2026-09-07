@@ -1,4 +1,3 @@
-
 @_documentation(visibility: public)
 public protocol __StoreDirectProtocol: __StoreProtocol, ~Copyable {
 

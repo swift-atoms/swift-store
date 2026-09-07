@@ -1,11 +1,9 @@
 import Cardinal
 import Index
 import Ordinal
-import Ordinal_Standard_Library_Integration
 import Store
 import Store_Test_Support
 import Tagged
-import Tagged_Standard_Library_Integration
 import Testing
 
 @Suite

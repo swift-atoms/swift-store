@@ -13,8 +13,8 @@ let package = Package(
     ],
     products: [
         .library(name: "Store", targets: ["Store"]),
-        .library(name: "Store Standard Library Integration", targets: ["Store Standard Library Integration"]),
-        .library(name: "Store Foundation Library Integration", targets: ["Store Foundation Library Integration"]),
+
+        .library(name: "Store Foundation Integration", targets: ["Store Foundation Integration"]),
         .library(name: "Store Test Support", targets: ["Store Test Support"]),
     ],
     dependencies: [
@@ -48,24 +48,16 @@ let package = Package(
                 .product(name: "Tagged", package: "swift-tagged"),
                 .product(name: "Difference", package: "swift-difference"),
                 .product(name: "Cardinal", package: "swift-cardinal"),
-                .product(name: "Ordinal Standard Library Integration", package: "swift-ordinal"),
             ],
             path: "Sources/Store"
         ),
+        
         .target(
-            name: "Store Standard Library Integration",
+            name: "Store Foundation Integration",
             dependencies: [
                 .target(name: "Store"),
             ],
-            path: "Sources/Store Standard Library Integration"
-        ),
-        .target(
-            name: "Store Foundation Library Integration",
-            dependencies: [
-                .target(name: "Store"),
-                .target(name: "Store Standard Library Integration"),
-            ],
-            path: "Sources/Store Foundation Library Integration"
+            path: "Sources/Store Foundation Integration"
         ),
         .target(
             name: "Store Test Support",
@@ -82,14 +74,10 @@ let package = Package(
                 .target(name: "Store Test Support"),
                 .product(name: "Difference", package: "swift-difference"),
                 .product(name: "Cardinal", package: "swift-cardinal"),
-                .product(name: "Cardinal Standard Library Integration", package: "swift-cardinal"),
                 .product(name: "Index", package: "swift-index"),
                 .product(name: "Ordinal", package: "swift-ordinal"),
-                .product(name: "Ordinal Standard Library Integration", package: "swift-ordinal"),
                 .product(name: "Tagged", package: "swift-tagged"),
-                .product(name: "Tagged Standard Library Integration", package: "swift-tagged"),
-                .target(name: "Store Standard Library Integration"),
-                .target(name: "Store Foundation Library Integration"),
+                .target(name: "Store Foundation Integration"),
             ],
             path: "Tests/Store Tests"
         ),

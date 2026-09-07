@@ -14,9 +14,11 @@ extension Store {
     }
 }
 
-extension Store.Effect: Sendable where Action: Sendable, Operation: Sendable {}
-extension Store.Effect: Equatable where Action: Equatable, Operation: Equatable {}
-extension Store.Effect: Hashable where Action: Hashable, Operation: Hashable {}
+extension Store.Effect: Swift.Sendable where Action: Swift.Sendable, Operation: Swift.Sendable {}
+
+extension Store.Effect: Swift.Equatable where Action: Swift.Equatable, Operation: Swift.Equatable {}
+
+extension Store.Effect: Swift.Hashable where Action: Swift.Hashable, Operation: Swift.Hashable {}
 
 extension Store.Effect {
 

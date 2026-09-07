@@ -1,4 +1,3 @@
-
 public protocol __StoreLedgeredProtocol: Store::Store.`Protocol`, ~Copyable {
 
     var initialization: Store::Store.Initialization<Element> { get set }
