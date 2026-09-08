@@ -2,7 +2,7 @@ import Store
 import Testing
 
 @Suite
-struct `Store.Update Tests` {
+struct `Store updates compose state changes and merge their effects` {
     enum Counter: Equatable, Sendable {
         case increment
         case decrement
@@ -26,7 +26,7 @@ struct `Store.Update Tests` {
     }
 
     @Suite
-    struct Unit {
+    struct `Store update composition preserves identity associativity and ordered state changes` {
 
         @Test
         func `empty changes nothing and asks for nothing`() {
@@ -40,7 +40,7 @@ struct `Store.Update Tests` {
         @Test
         func `applying an update advances the state`() {
             var count = 0
-            let effect = `Store.Update Tests`.counter.effect(for: .increment, in: &count)
+            let effect = `Store updates compose state changes and merge their effects`.counter.effect(for: .increment, in: &count)
 
             #expect(count == 1)
             #expect(effect == .run(.beacon))
@@ -48,7 +48,7 @@ struct `Store.Update Tests` {
 
         @Test
         func `combining runs both updates over the same state`() {
-            let twice = `Store.Update Tests`.counter.combined(with: `Store.Update Tests`.counter)
+            let twice = `Store updates compose state changes and merge their effects`.counter.combined(with: `Store updates compose state changes and merge their effects`.counter)
 
             var count = 0
             _ = twice.effect(for: .increment, in: &count)
@@ -58,7 +58,7 @@ struct `Store.Update Tests` {
 
         @Test
         func `combining merges the effects of both updates`() {
-            let twice = `Store.Update Tests`.counter.combined(with: `Store.Update Tests`.counter)
+            let twice = `Store updates compose state changes and merge their effects`.counter.combined(with: `Store updates compose state changes and merge their effects`.counter)
 
             var count = 0
             let effect = twice.effect(for: .increment, in: &count)
@@ -68,7 +68,7 @@ struct `Store.Update Tests` {
 
         @Test
         func `empty is a two-sided identity for combining`() {
-            let counter = `Store.Update Tests`.counter
+            let counter = `Store updates compose state changes and merge their effects`.counter
             let empty = Store::Store.Update<Int, Counter, Job>.empty
 
             for action in [Counter.increment, .decrement] {
@@ -96,7 +96,7 @@ struct `Store.Update Tests` {
                 count *= 2
                 return .run(.audit)
             }
-            let counter = `Store.Update Tests`.counter
+            let counter = `Store updates compose state changes and merge their effects`.counter
 
             var left = 5
             var right = 5
@@ -118,7 +118,7 @@ struct `Store.Update Tests` {
             }
 
             var count = 0
-            _ = Store::Store.Update([`Store.Update Tests`.counter, step]).effect(
+            _ = Store::Store.Update([`Store updates compose state changes and merge their effects`.counter, step]).effect(
                 for: .increment,
                 in: &count
             )
@@ -129,7 +129,7 @@ struct `Store.Update Tests` {
         @Test
         func `optional advances present state`() {
             var state: Int? = 2
-            let effect = `Store.Update Tests`.counter.optional.effect(for: .increment, in: &state)
+            let effect = `Store updates compose state changes and merge their effects`.counter.optional.effect(for: .increment, in: &state)
 
             #expect(state == 3)
             #expect(effect == .run(.beacon))
@@ -137,12 +137,12 @@ struct `Store.Update Tests` {
     }
 
     @Suite
-    struct `Edge Case` {
+    struct `Empty arrays and absent optional state leave store updates without changes` {
 
         @Test
         func `optional ignores absent state`() {
             var state: Int?
-            let effect = `Store.Update Tests`.counter.optional.effect(for: .increment, in: &state)
+            let effect = `Store updates compose state changes and merge their effects`.counter.optional.effect(for: .increment, in: &state)
 
             #expect(state == nil)
             #expect(effect == .none)

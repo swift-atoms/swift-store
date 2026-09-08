@@ -7,7 +7,7 @@ import Tagged
 import Testing
 
 @Suite
-struct `Store.Initialization` {
+struct `Store initialization ledgers preserve occupied ranges counts and visitation order` {
 
     @Test
     func `linear(count:) of zero is .empty`() {
@@ -100,8 +100,8 @@ struct `Store.Initialization` {
         #expect(visits[1].1 == Index<Int>(2))
     }
 
-    @Test("Equatable distinguishes cases and payloads")
-    func equatable() {
+    @Test
+    func `Store initialization equality distinguishes range payloads and empty state`() {
         let a = Store::Store.Initialization<Int>.linear(count: 3)
         let b = Store::Store.Initialization<Int>.linear(count: 3)
         let c = Store::Store.Initialization<Int>.linear(count: 4)

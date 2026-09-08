@@ -30,7 +30,7 @@ extension Probe {
 }
 
 @Suite(.serialized)
-struct `Store Inline Tests` {
+struct `Inline stores preserve element mutation transfer and single destruction` {
 
     @Test
     func `create reports capacity empty`() {
@@ -42,7 +42,7 @@ struct `Store Inline Tests` {
     }
 
     @Test
-    func `initialize subscript mutate move`() {
+    func `Inline storage preserves a mutated value through transfer and destroys it once`() {
         Probe.reset()
         var s = Store::Store.Inline<Item, 4>()
         s.initialize(at: 0, to: Item(7, value: 70))

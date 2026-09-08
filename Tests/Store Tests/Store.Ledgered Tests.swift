@@ -38,7 +38,7 @@ private func relabel<S: Store::Store.Ledgered.`Protocol` & ~Copyable>(
 }
 
 @Suite
-struct `Store Ledgered Tests` {
+struct `Ledgered stores expose mutable ledgers and generic storage operations` {
 
     @Test
     func `the settable ledger requirement is generically writable and readable`() {

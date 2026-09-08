@@ -136,9 +136,9 @@ func driveTokenSeam<S: Store.`Protocol` & ~Copyable>(
     return store.move(at: slot)
 }
 
-@Suite struct Test {
+@Suite struct `Store capabilities preserve element access mutation and transfer` {
 
-    @Suite struct Unit {
+    @Suite struct `Store construction and element operations preserve capacity and reusable slots` {
 
         @Test
         func `namespace and typealias resolve`() {
@@ -188,7 +188,7 @@ func driveTokenSeam<S: Store.`Protocol` & ~Copyable>(
         }
     }
 
-    @Suite struct `Edge Case` {
+    @Suite struct `Store boundary slots and noncopyable elements preserve their payloads` {
 
         @Test
         func `first and last slots round-trip`() {
@@ -219,7 +219,7 @@ func driveTokenSeam<S: Store.`Protocol` & ~Copyable>(
         }
     }
 
-    @Suite struct Integration {
+    @Suite struct `Generic and concrete store operations preserve transferred element values` {
 
         @Test
         func `generic function over the capability round-trips (Int element)`() {

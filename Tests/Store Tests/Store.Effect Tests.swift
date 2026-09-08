@@ -2,7 +2,7 @@ import Store
 import Testing
 
 @Suite
-struct `Store.Effect Tests` {
+struct `Store effects preserve composition structure and mapped actions` {
     enum Action: Equatable, Sendable {
         case first
         case second
@@ -27,11 +27,11 @@ struct `Store.Effect Tests` {
     ]
 
     @Suite
-    struct Unit {
+    struct `Store effect composition preserves identities associativity and mapping laws` {
 
         @Test
         func `none is a two-sided identity for merging`() {
-            for effect in `Store.Effect Tests`.samples {
+            for effect in `Store effects preserve composition structure and mapped actions`.samples {
                 #expect(effect.merged(with: .none) == effect)
                 #expect(Effect.none.merged(with: effect) == effect)
             }
@@ -39,7 +39,7 @@ struct `Store.Effect Tests` {
 
         @Test
         func `none is a two-sided identity for sequencing`() {
-            for effect in `Store.Effect Tests`.samples {
+            for effect in `Store effects preserve composition structure and mapped actions`.samples {
                 #expect(effect.followed(by: .none) == effect)
                 #expect(Effect.none.followed(by: effect) == effect)
             }
@@ -47,7 +47,7 @@ struct `Store.Effect Tests` {
 
         @Test
         func `merging is associative`() {
-            let samples = `Store.Effect Tests`.samples
+            let samples = `Store effects preserve composition structure and mapped actions`.samples
             for a in samples {
                 for b in samples {
                     for c in samples {
@@ -61,7 +61,7 @@ struct `Store.Effect Tests` {
 
         @Test
         func `sequencing is associative`() {
-            let samples = `Store.Effect Tests`.samples
+            let samples = `Store effects preserve composition structure and mapped actions`.samples
             for a in samples {
                 for b in samples {
                     for c in samples {
@@ -107,7 +107,7 @@ struct `Store.Effect Tests` {
 
         @Test
         func `mapping actions with identity leaves the effect unchanged`() {
-            for effect in `Store.Effect Tests`.samples {
+            for effect in `Store effects preserve composition structure and mapped actions`.samples {
                 let mapped = effect.map(action: { $0 })
                 #expect(mapped == effect)
             }
@@ -162,7 +162,7 @@ struct `Store.Effect Tests` {
     }
 
     @Suite
-    struct `Edge Case` {
+    struct `Store effects preserve empty composition structure and propagate mapping failures` {
 
         @Test
         func `merging two nones is none`() {
