@@ -1,6 +1,6 @@
-public import Difference
-public import Index
-public import Ordinal
+import Difference
+import Index
+import Ordinal
 
 extension Store::Store {
 

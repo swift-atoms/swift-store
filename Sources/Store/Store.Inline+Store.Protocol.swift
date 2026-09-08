@@ -1,4 +1,4 @@
-public import Difference
+import Difference
 public import Cardinal
 public import Index
 public import Ordinal

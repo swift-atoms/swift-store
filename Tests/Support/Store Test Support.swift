@@ -1,1 +1,1 @@
-public import Store
+import Store

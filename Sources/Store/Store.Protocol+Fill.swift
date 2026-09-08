@@ -1,5 +1,5 @@
 public import Index
-public import Difference
+import Difference
 public import Cardinal
 public import Ordinal
 public import Tagged
