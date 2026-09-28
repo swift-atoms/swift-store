@@ -33,8 +33,7 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/swift-atoms/swift-ordinal.git",
-            branch: "main"
-        ),
+            branch: "main"),
         .package(
             url: "https://github.com/swift-atoms/swift-cardinal.git",
             branch: "main"
