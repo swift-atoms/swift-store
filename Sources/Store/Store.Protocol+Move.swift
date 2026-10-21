@@ -1,6 +1,6 @@
-public import Index
-import Difference
 public import Cardinal
+import Difference
+public import Index
 public import Ordinal
 public import Tagged
 
@@ -26,10 +26,13 @@ extension __StoreProtocol where Self: ~Copyable {
                 let step: Index<Element>.Count = remaining.subtract.saturating(.one)
                 let offset = Index<Element>.Offset(fromZero: step.map(Ordinal.init))
 
-                let sourceSlot = try! source + offset
-
-                let destinationSlot = try! destination + offset
-                move(from: sourceSlot, to: destinationSlot)
+                do {
+                    let sourceSlot = try source + offset
+                    let destinationSlot = try destination + offset
+                    move(from: sourceSlot, to: destinationSlot)
+                } catch {
+                    preconditionFailure("Offset derived from a count within the source and destination ranges: \(error)")
+                }
                 remaining = step
             }
         } else {

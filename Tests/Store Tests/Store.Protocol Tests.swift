@@ -1,5 +1,5 @@
-import Difference
 import Cardinal
+import Difference
 import Index
 import Ordinal
 import Store

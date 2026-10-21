@@ -5,5 +5,5 @@
 @_exported public import Tagged
 
 #if Algebra
-@_exported public import Algebra
+    @_exported public import Algebra
 #endif

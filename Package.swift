@@ -33,7 +33,8 @@ let package = Package(
         ),
         .package(
             url: "https://github.com/swift-atoms/swift-ordinal.git",
-            branch: "main"),
+            branch: "main"
+        ),
         .package(
             url: "https://github.com/swift-atoms/swift-cardinal.git",
             branch: "main"
@@ -58,11 +59,11 @@ let package = Package(
             ],
             path: "Sources/Store"
         ),
-        
+
         .target(
             name: "Store Foundation Integration",
             dependencies: [
-                .target(name: "Store"),
+                .target(name: "Store")
             ],
             path: "Sources/Store Foundation Integration"
         ),
