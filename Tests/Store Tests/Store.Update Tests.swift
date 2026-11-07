@@ -46,7 +46,7 @@ extension `Store.Update Tests`.`Store updates compose state changes and merge th
         @Test
         func `applying an update advances the state`() {
             var count = 0
-            let effect = `Store updates compose state changes and merge their effects`.counter.effect(for: .increment, in: &count)
+            let effect = `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter.effect(for: .increment, in: &count)
 
             #expect(count == 1)
             #expect(effect == .run(.beacon))
@@ -54,7 +54,7 @@ extension `Store.Update Tests`.`Store updates compose state changes and merge th
 
         @Test
         func `combining runs both updates over the same state`() {
-            let twice = `Store updates compose state changes and merge their effects`.counter.combined(with: `Store updates compose state changes and merge their effects`.counter)
+            let twice = `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter.combined(with: `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter)
 
             var count = 0
             _ = twice.effect(for: .increment, in: &count)
@@ -64,7 +64,7 @@ extension `Store.Update Tests`.`Store updates compose state changes and merge th
 
         @Test
         func `combining merges the effects of both updates`() {
-            let twice = `Store updates compose state changes and merge their effects`.counter.combined(with: `Store updates compose state changes and merge their effects`.counter)
+            let twice = `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter.combined(with: `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter)
 
             var count = 0
             let effect = twice.effect(for: .increment, in: &count)
@@ -74,7 +74,7 @@ extension `Store.Update Tests`.`Store updates compose state changes and merge th
 
         @Test
         func `empty is a two-sided identity for combining`() {
-            let counter = `Store updates compose state changes and merge their effects`.counter
+            let counter = `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter
             let empty = Store::Store.Update<Int, Counter, Job>.empty
 
             for action in [Counter.increment, .decrement] {
@@ -102,7 +102,7 @@ extension `Store.Update Tests`.`Store updates compose state changes and merge th
                 count *= 2
                 return .run(.audit)
             }
-            let counter = `Store updates compose state changes and merge their effects`.counter
+            let counter = `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter
 
             var left = 5
             var right = 5
@@ -124,7 +124,7 @@ extension `Store.Update Tests`.`Store updates compose state changes and merge th
             }
 
             var count = 0
-            _ = Store::Store.Update([`Store updates compose state changes and merge their effects`.counter, step]).effect(
+            _ = Store::Store.Update([`Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter, step]).effect(
                 for: .increment,
                 in: &count
             )
@@ -135,7 +135,7 @@ extension `Store.Update Tests`.`Store updates compose state changes and merge th
         @Test
         func `optional advances present state`() {
             var state: Int? = 2
-            let effect = `Store updates compose state changes and merge their effects`.counter.optional.effect(for: .increment, in: &state)
+            let effect = `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter.optional.effect(for: .increment, in: &state)
 
             #expect(state == 3)
             #expect(effect == .run(.beacon))
@@ -148,7 +148,7 @@ extension `Store.Update Tests`.`Store updates compose state changes and merge th
         @Test
         func `optional ignores absent state`() {
             var state: Int?
-            let effect = `Store updates compose state changes and merge their effects`.counter.optional.effect(for: .increment, in: &state)
+            let effect = `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter.optional.effect(for: .increment, in: &state)
 
             #expect(state == nil)
             #expect(effect == .none)
