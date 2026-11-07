@@ -51,7 +51,7 @@ private final class TrackedItem {
     deinit { log.ids.append(id) }
 }
 
-private enum VisitFailure: Error {
+private enum VisitFailure: Swift.Error {
     case stopped
 }
 
