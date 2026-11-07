@@ -136,8 +136,14 @@ func driveTokenSeam<S: Store.`Protocol` & ~Copyable>(
     return store.move(at: slot)
 }
 
-@Suite struct `Store capabilities preserve element access mutation and transfer` {
+enum `Store.Protocol Tests` {}
 
+extension `Store.Protocol Tests` {
+    @Suite struct `Store capabilities preserve element access mutation and transfer` {
+    }
+}
+
+extension `Store.Protocol Tests`.`Store capabilities preserve element access mutation and transfer` {
     @Suite struct `Store construction and element operations preserve capacity and reusable slots` {
 
         @Test

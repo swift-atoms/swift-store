@@ -3,12 +3,16 @@ import Testing
 
 @Suite
 struct `Store keys expose their supplied initial values` {
-    @Suite struct `Store keys retain ordinary initial values and callable command values` {}
-    @Suite struct `No store key boundary cases are defined` {}
     enum Palette {}
 
     enum Dismiss {}
 
+}
+
+extension `Store keys expose their supplied initial values` {
+    @Suite struct `Store keys retain ordinary initial values and callable command values` {}
+
+    @Suite struct `No store key boundary cases are defined` {}
 }
 
 extension `Store keys expose their supplied initial values`.Palette: Store::Store.Key.`Protocol` {

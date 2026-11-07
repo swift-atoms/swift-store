@@ -1,30 +1,36 @@
 import Store
 import Testing
 
-@Suite
-struct `Store updates compose state changes and merge their effects` {
-    enum Counter: Equatable, Sendable {
-        case increment
-        case decrement
-    }
+enum `Store.Update Tests` {}
 
-    enum Job: Equatable, Sendable {
-        case beacon
-        case audit
-    }
+extension `Store.Update Tests` {
+    @Suite
+    struct `Store updates compose state changes and merge their effects` {
+        enum Counter: Equatable, Sendable {
+            case increment
+            case decrement
+        }
 
-    static let counter = Store::Store.Update<Int, Counter, Job> { count, action in
-        switch action {
-        case .increment:
-            count += 1
-            return .run(.beacon)
+        enum Job: Equatable, Sendable {
+            case beacon
+            case audit
+        }
 
-        case .decrement:
-            count -= 1
-            return .none
+        static let counter = Store::Store.Update<Int, Counter, Job> { count, action in
+            switch action {
+            case .increment:
+                count += 1
+                return .run(.beacon)
+
+            case .decrement:
+                count -= 1
+                return .none
+            }
         }
     }
+}
 
+extension `Store.Update Tests`.`Store updates compose state changes and merge their effects` {
     @Suite
     struct `Store update composition preserves identity associativity and ordered state changes` {
 

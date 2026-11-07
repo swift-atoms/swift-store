@@ -1,31 +1,37 @@
 import Store
 import Testing
 
-@Suite
-struct `Store effects preserve composition structure and mapped actions` {
-    enum Action: Equatable, Sendable {
-        case first
-        case second
-        case third
+enum `Store.Effect Tests` {}
+
+extension `Store.Effect Tests` {
+    @Suite
+    struct `Store effects preserve composition structure and mapped actions` {
+        enum Action: Equatable, Sendable {
+            case first
+            case second
+            case third
+        }
+
+        enum Job: Equatable, Sendable {
+            case load
+            case save
+        }
+
+        typealias Effect = Store::Store.Effect<Action, Job>
+
+        static let samples: [Effect] = [
+            .none,
+            .send(.first),
+            .run(.load),
+            .merge([.send(.first), .run(.save)]),
+            .sequence([.send(.second), .run(.load)]),
+            .merge([]),
+            .sequence([]),
+        ]
     }
+}
 
-    enum Job: Equatable, Sendable {
-        case load
-        case save
-    }
-
-    typealias Effect = Store::Store.Effect<Action, Job>
-
-    static let samples: [Effect] = [
-        .none,
-        .send(.first),
-        .run(.load),
-        .merge([.send(.first), .run(.save)]),
-        .sequence([.send(.second), .run(.load)]),
-        .merge([]),
-        .sequence([]),
-    ]
-
+extension `Store.Effect Tests`.`Store effects preserve composition structure and mapped actions` {
     @Suite
     struct `Store effect composition preserves identities associativity and mapping laws` {
 
