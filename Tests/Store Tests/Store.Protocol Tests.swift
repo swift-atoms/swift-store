@@ -8,7 +8,7 @@ import Tagged
 import Testing
 
 @safe
-private struct HeapStore<Element>: ~Copyable {
+struct HeapStore<Element>: ~Copyable {
     @usableFromInline
     var _base: UnsafeMutablePointer<Element>
 
@@ -63,7 +63,7 @@ struct Token: ~Copyable {
 }
 
 @safe
-private struct HeapStoreNC<Element: ~Copyable>: ~Copyable {
+struct HeapStoreNC<Element: ~Copyable>: ~Copyable {
     @usableFromInline
     var _base: UnsafeMutablePointer<Element>
 
@@ -136,14 +136,8 @@ func driveTokenSeam<S: Store.`Protocol` & ~Copyable>(
     return store.move(at: slot)
 }
 
-enum `Store.Protocol Tests` {}
+@Suite struct `Store capabilities preserve element access mutation and transfer` {
 
-extension `Store.Protocol Tests` {
-    @Suite struct `Store capabilities preserve element access mutation and transfer` {
-    }
-}
-
-extension `Store.Protocol Tests`.`Store capabilities preserve element access mutation and transfer` {
     @Suite struct `Store construction and element operations preserve capacity and reusable slots` {
 
         @Test
