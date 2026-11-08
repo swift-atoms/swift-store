@@ -54,7 +54,9 @@ extension `Store.Update Tests`.`Store updates compose state changes and merge th
 
         @Test
         func `combining runs both updates over the same state`() {
-            let twice = `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter.combined(with: `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter)
+            let twice = `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter.combined(
+                with: `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter
+            )
 
             var count = 0
             _ = twice.effect(for: .increment, in: &count)
@@ -64,7 +66,9 @@ extension `Store.Update Tests`.`Store updates compose state changes and merge th
 
         @Test
         func `combining merges the effects of both updates`() {
-            let twice = `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter.combined(with: `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter)
+            let twice = `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter.combined(
+                with: `Store.Update Tests`.`Store updates compose state changes and merge their effects`.counter
+            )
 
             var count = 0
             let effect = twice.effect(for: .increment, in: &count)

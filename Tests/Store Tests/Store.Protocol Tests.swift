@@ -8,7 +8,7 @@ import Tagged
 import Testing
 
 @safe
-fileprivate struct HeapStore<Element>: ~Copyable {
+private struct HeapStore<Element>: ~Copyable {
     @usableFromInline
     var _base: UnsafeMutablePointer<Element>
 
@@ -63,7 +63,7 @@ struct Token: ~Copyable {
 }
 
 @safe
-fileprivate struct HeapStoreNC<Element: ~Copyable>: ~Copyable {
+private struct HeapStoreNC<Element: ~Copyable>: ~Copyable {
     @usableFromInline
     var _base: UnsafeMutablePointer<Element>
 

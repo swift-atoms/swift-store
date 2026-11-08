@@ -1,7 +1,7 @@
+public import Cardinal
 public import Index
 public import Ordinal
 public import Tagged
-public import Cardinal
 
 extension Store::Store {
 
