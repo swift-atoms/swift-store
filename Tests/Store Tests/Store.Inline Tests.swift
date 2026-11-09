@@ -167,7 +167,12 @@ extension `Store.Inline Tests` {
             Probe.reset()
             do {
                 var s = Store::Store.Inline<Item, 8>()
-                for id in 0..<6 { s.initialize(at: Index<Item>(Ordinal(UInt(id))), to: Item(id)) }
+                s.initialize(at: 0, to: Item(0))
+                s.initialize(at: 1, to: Item(1))
+                s.initialize(at: 2, to: Item(2))
+                s.initialize(at: 3, to: Item(3))
+                s.initialize(at: 4, to: Item(4))
+                s.initialize(at: 5, to: Item(5))
                 s.swapAt(1, 4)
                 let ids = [s[1].id, s[4].id]
                 #expect(ids == [4, 1])
