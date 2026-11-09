@@ -4,17 +4,18 @@ public import Index
 public import Ordinal
 public import Tagged
 
-extension __StoreProtocol where Self: ~Copyable {
+extension __StoreLedgeredProtocol where Self: ~Copyable {
 
     @inlinable
     public func forEach<E: Swift.Error>(
         _ body: (borrowing Element) throws(E) -> Void
     ) throws(E) {
-        var slot: Index<Element> = .zero
-        let upper: Index<Element> = capacity.map(Ordinal.init)
-        while slot < upper {
-            try body(self[slot])
-            slot += .one
+        try initialization.forEach { (range: Swift.Range<Index<Element>>) throws(E) in
+            var slot = range.lowerBound
+            while slot < range.upperBound {
+                try body(self[slot])
+                slot += .one
+            }
         }
     }
 
@@ -24,11 +25,8 @@ extension __StoreProtocol where Self: ~Copyable {
         _ accumulate: (inout Result, borrowing Element) throws(E) -> Void
     ) throws(E) -> Result {
         var result = initialResult
-        var slot: Index<Element> = .zero
-        let upper: Index<Element> = capacity.map(Ordinal.init)
-        while slot < upper {
-            try accumulate(&result, self[slot])
-            slot += .one
+        try forEach { (element: borrowing Element) throws(E) in
+            try accumulate(&result, element)
         }
         return result
     }
@@ -37,27 +35,22 @@ extension __StoreProtocol where Self: ~Copyable {
     public func contains<E: Swift.Error>(
         where predicate: (borrowing Element) throws(E) -> Bool
     ) throws(E) -> Bool {
-        var slot: Index<Element> = .zero
-        let upper: Index<Element> = capacity.map(Ordinal.init)
-        while slot < upper {
-            if try predicate(self[slot]) { return true }
-            slot += .one
+        var found = false
+        try initialization.forEach { (range: Swift.Range<Index<Element>>) throws(E) in
+            var slot = range.lowerBound
+            while !found, slot < range.upperBound {
+                found = try predicate(self[slot])
+                slot += .one
+            }
         }
-        return false
+        return found
     }
 }
 
-extension __StoreProtocol where Self: ~Copyable, Element: Equatable {
+extension __StoreLedgeredProtocol where Self: ~Copyable, Element: Equatable {
 
     @inlinable
     public func contains(_ element: borrowing Element) -> Bool {
-
-        var slot: Index<Element> = .zero
-        let upper: Index<Element> = capacity.map(Ordinal.init)
-        while slot < upper {
-            if self[slot] == element { return true }
-            slot += .one
-        }
-        return false
+        contains { $0 == element }
     }
 }

@@ -14,10 +14,15 @@ extension __StoreProtocol where Self: ~Copyable, Element: Copyable {
             slot += .one
         }
     }
+}
+
+extension __StoreLedgeredProtocol where Self: ~Copyable, Element: Copyable {
 
     @inlinable
     public mutating func fill(with element: borrowing Element) {
+        precondition(initialization.isEmpty, "Store.fill(with:): the store must be vacant")
         let upper: Index<Element> = capacity.map(Ordinal.init)
         fill(range: .zero..<upper, with: element)
+        initialization = .linear(count: capacity)
     }
 }

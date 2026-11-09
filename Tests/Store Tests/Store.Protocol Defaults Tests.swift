@@ -1,12 +1,19 @@
+import Ordinal
 import Store
 import Testing
 
-private struct CheckedSlots<Element>: Store.`Protocol`, ~Copyable {
+private struct CheckedSlots<Element>: Store.Ledgered.`Protocol`, ~Copyable {
     var slots: [Element?]
+    var initialization: Store.Initialization<Element> = .empty
     var movedSlots: [Int] = []
     var initializedSlots: [Int] = []
 
-    init(_ slots: [Element?]) { self.slots = slots }
+    init(_ slots: [Element?]) {
+        self.slots = slots
+        for (position, slot) in slots.enumerated() where slot != nil {
+            initialization = initialization.inserting(Index<Element>(Ordinal(UInt(position))))
+        }
+    }
 
     var capacity: Index<Element>.Count { .init(UInt(slots.count)) }
 
@@ -23,6 +30,7 @@ private struct CheckedSlots<Element>: Store.`Protocol`, ~Copyable {
         let position = Int(slot.underlying.rawValue)
         precondition(slots[position] == nil)
         initializedSlots.append(position)
+        initialization = initialization.inserting(slot)
         slots[position] = element
     }
 
@@ -30,6 +38,7 @@ private struct CheckedSlots<Element>: Store.`Protocol`, ~Copyable {
         let position = Int(slot.underlying.rawValue)
         let value = slots[position]!
         movedSlots.append(position)
+        initialization = initialization.removing(slot)
         slots[position] = nil
         return value
     }

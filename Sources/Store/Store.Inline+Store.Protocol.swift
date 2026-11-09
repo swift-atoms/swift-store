@@ -55,58 +55,36 @@ extension Store::Store.Inline where Element: ~Copyable {
 
     @inlinable
     public mutating func initialize(at slot: Index<Element>, to element: consuming Element) {
-
+        let initialization = _initialization.inserting(slot)
         let pointer = unsafe _mutableBase() + Index<Element>.Offset(fromZero: slot)
         unsafe pointer.initialize(to: element)
-        _initialization = .linear(count: count + .one)
+        _initialization = initialization
     }
 
     @inlinable
     public mutating func move(at slot: Index<Element>) -> Element {
-        let element = withUnsafeMutablePointer(to: &_storage) { raw -> Element in
+        _initialization = _initialization.removing(slot)
+        return withUnsafeMutablePointer(to: &_storage) { raw -> Element in
             let base = unsafe UnsafeMutableRawPointer(raw).assumingMemoryBound(to: Element.self)
             let pointer = unsafe base + Index<Element>.Offset(fromZero: slot)
             return unsafe pointer.move()
         }
-        _initialization = .linear(count: count.subtract.saturating(.one))
-        return element
-    }
-}
-
-extension Store::Store.Inline where Element: ~Copyable {
-
-    @inlinable
-    package func _isValidPrefixTailRemoval(range removed: Swift.Range<Index<Element>>) -> Bool {
-        guard initialization.isPrefixShaped, !removed.isEmpty else { return true }
-        return removed.upperBound == initialization.count.map(Ordinal.init)
     }
 
     @inlinable
-    public mutating func deinitialize(at slot: Index<Element>) {
-        let removed = Swift.Range<Index<Element>>(start: slot, count: .one)
-        assert(
-            _isValidPrefixTailRemoval(range: removed),
-            "Store.Inline.deinitialize(at:): slot is not the ledger's tail — move(at:)'s "
-                + "linear-prefix self-maintenance is truthful only for LIFO (tail) removal; a "
-                + "non-tail removal must re-sync `initialization` explicitly "
-                + "(Store.Ledgered.Protocol)"
+    public mutating func swapAt(_ i: Index<Element>, _ j: Index<Element>) {
+        precondition(
+            _initialization.contains(i) && _initialization.contains(j),
+            "Store.Inline.swapAt(_:_:): both slots must be initialized"
         )
-        _ = move(at: slot)
-    }
-
-    @inlinable
-    public mutating func deinitialize(range: Swift.Range<Index<Element>>) {
-        assert(
-            _isValidPrefixTailRemoval(range: range),
-            "Store.Inline.deinitialize(range:): range is not the ledger's tail range — "
-                + "move(at:)'s linear-prefix self-maintenance is truthful only for LIFO (tail) "
-                + "removal; a non-tail removal must re-sync `initialization` explicitly "
-                + "(Store.Ledgered.Protocol)"
-        )
-        var slot = range.lowerBound
-        while slot < range.upperBound {
-            _ = move(at: slot)
-            slot += .one
+        guard i != j else { return }
+        withUnsafeMutablePointer(to: &_storage) { raw in
+            let base = unsafe UnsafeMutableRawPointer(raw).assumingMemoryBound(to: Element.self)
+            let first = unsafe base + Index<Element>.Offset(fromZero: i)
+            let second = unsafe base + Index<Element>.Offset(fromZero: j)
+            let element = unsafe first.move()
+            unsafe first.moveInitialize(from: second, count: 1)
+            unsafe second.initialize(to: element)
         }
     }
 }

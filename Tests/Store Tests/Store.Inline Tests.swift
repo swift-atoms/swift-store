@@ -110,36 +110,99 @@ extension `Store.Inline Tests` {
         }
 
         @Test
-        func
-            `_isValidPrefixTailRemoval accepts only the tail on a prefix-shaped ledger (F-004 regression)`()
-        {
+        func `non-tail initialize records the initialized slot so teardown destroys only it (#6)`() {
+            Probe.reset()
+            do {
+                var s = Store::Store.Inline<Item, 4>()
+                s.initialize(at: 2, to: Item(3))
+                let ledger = s.initialization
+                #expect(ledger == .one(Swift.Range<Index<Item>>(start: 2, count: .one)))
+            }
+            let ds = Probe.destroyedSorted
+            #expect(ds == [3])
+        }
 
-            var s = Store::Store.Inline<Int, 4>()
-            s.initialize(at: 0, to: 10)
-            s.initialize(at: 1, to: 11)
-            s.initialize(at: 2, to: 12)
+        @Test
+        func `non-tail move vacates exactly that slot so teardown destroys the rest once (#6)`() {
+            Probe.reset()
+            do {
+                var s = Store::Store.Inline<Item, 4>()
+                s.initialize(at: 0, to: Item(1))
+                s.initialize(at: 1, to: Item(2))
+                s.initialize(at: 2, to: Item(3))
+                let moved = s.move(at: 0)
+                let movedID = moved.id
+                #expect(movedID == 1)
+                _ = consume moved
+                let ledger = s.initialization
+                #expect(ledger == .one(Swift.Range<Index<Item>>(start: 1, count: 2)))
+                s.deinitialize(at: 1)
+            }
+            let ds = Probe.destroyedSorted
+            #expect(ds == [1, 2, 3])
+        }
 
-            let tail = Swift.Range<Index<Int>>(start: 2, count: .one)
-            let notTail0 = Swift.Range<Index<Int>>(start: 0, count: .one)
-            let notTail1 = Swift.Range<Index<Int>>(start: 1, count: .one)
-            let tailIsValid = s._isValidPrefixTailRemoval(range: tail)
-            let notTail0IsValid = s._isValidPrefixTailRemoval(range: notTail0)
-            let notTail1IsValid = s._isValidPrefixTailRemoval(range: notTail1)
-            #expect(tailIsValid)
-            #expect(!notTail0IsValid)
-            #expect(!notTail1IsValid)
+        @Test
+        func `wrapped initialization keeps two ranges and teardown destroys both once (#6)`() {
+            Probe.reset()
+            do {
+                var s = Store::Store.Inline<Item, 4>()
+                s.initialize(at: 0, to: Item(1))
+                s.initialize(at: 3, to: Item(4))
+                let ledger = s.initialization
+                #expect(
+                    ledger
+                        == .two(
+                            first: Swift.Range<Index<Item>>(start: 3, count: .one),
+                            second: Swift.Range<Index<Item>>(start: 0, count: .one)
+                        )
+                )
+            }
+            let ds = Probe.destroyedSorted
+            #expect(ds == [1, 4])
+        }
 
-            s.initialization = .two(
-                first: Swift.Range<Index<Int>>(start: 2, count: .one),
-                second: Swift.Range<Index<Int>>(start: 0, count: .one)
-            )
-            let notTail0IsValidWhenWrapped = s._isValidPrefixTailRemoval(range: notTail0)
-            #expect(notTail0IsValidWhenWrapped)
+        @Test
+        func `swapAt exchanges elements in place without changing the ledger (#6)`() {
+            Probe.reset()
+            do {
+                var s = Store::Store.Inline<Item, 8>()
+                for id in 0..<6 { s.initialize(at: Index<Item>(Ordinal(UInt(id))), to: Item(id)) }
+                s.swapAt(1, 4)
+                let ids = [s[1].id, s[4].id]
+                #expect(ids == [4, 1])
+                let count = s.count
+                #expect(count == Index<Item>.Count(6))
+            }
+            let ds = Probe.destroyedSorted
+            #expect(ds == [0, 1, 2, 3, 4, 5])
+        }
 
-            s.initialization = .linear(count: 3)
-            _ = s.move(at: 2)
-            _ = s.move(at: 1)
-            _ = s.move(at: 0)
+        @Test
+        func `whole-store defaults visit and clear only the ledger's slots (#6)`() {
+            Probe.reset()
+            var s = Store::Store.Inline<Item, 4>()
+            s.initialize(at: 1, to: Item(2))
+            s.initialize(at: 2, to: Item(3))
+            var visited: [Int] = []
+            s.forEach { visited.append($0.id) }
+            let sum = s.reduce(into: 0) { $0 += $1.id }
+            let found = s.contains { $0.id == 3 }
+            #expect(visited == [2, 3])
+            #expect(sum == 5)
+            #expect(found)
+            s.clear()
+            let empty = s.isEmpty
+            let ds = Probe.destroyedSorted
+            #expect(empty)
+            #expect(ds == [2, 3])
+
+            var ints = Store::Store.Inline<Int, 3>()
+            ints.fill(with: 7)
+            var copied = Store::Store.Inline<Int, 3>()
+            ints.copy(to: &copied)
+            let total = copied.reduce(into: 0) { $0 += $1 }
+            #expect(total == 21)
         }
 
         @Test

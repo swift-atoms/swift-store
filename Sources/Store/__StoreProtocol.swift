@@ -19,11 +19,15 @@ extension __StoreProtocol where Self: ~Copyable {
             slot += .one
         }
     }
+}
+
+extension __StoreLedgeredProtocol where Self: ~Copyable {
 
     @inlinable
     public mutating func clear() {
-        let upper: Index<Element> = capacity.map(Ordinal.init)
-        deinitialize(range: .zero..<upper)
+        let ledger = initialization
+        ledger.forEach { range in deinitialize(range: range) }
+        initialization = .empty
     }
 
     @inlinable

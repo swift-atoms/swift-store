@@ -114,3 +114,40 @@ extension `Store.Initialization Tests` {
         }
     }
 }
+
+extension `Store.Initialization Tests` {
+    @Suite
+    struct `Store initialization ledgers follow single slot changes` {
+
+        @Test
+        func `inserting extends adjacent ranges and opens a second range otherwise`() {
+            let tail = Store::Store.Initialization<Int>.linear(count: 2).inserting(2)
+            #expect(tail == .linear(count: 3))
+            let wrapped = Store::Store.Initialization<Int>.linear(count: 2).inserting(5)
+            let expected = Store::Store.Initialization<Int>.two(
+                first: Swift.Range<Index<Int>>(start: 5, count: .one),
+                second: Swift.Range<Index<Int>>(start: .zero, count: 2)
+            )
+            #expect(wrapped == expected)
+            let joined = wrapped.inserting(4).inserting(3).inserting(2)
+            #expect(joined == .linear(count: 6))
+        }
+
+        @Test
+        func `removing shrinks or splits the range holding the slot`() {
+            let ledger = Store::Store.Initialization<Int>.linear(count: 4)
+            let head = ledger.removing(.zero)
+            #expect(head == .one(Swift.Range<Index<Int>>(start: 1, count: 3)))
+            let split = ledger.removing(1)
+            let expected = Store::Store.Initialization<Int>.two(
+                first: Swift.Range<Index<Int>>(start: .zero, count: .one),
+                second: Swift.Range<Index<Int>>(start: 2, count: 2)
+            )
+            #expect(split == expected)
+            #expect(split.contains(.zero))
+            #expect(!split.contains(1))
+            let drained = split.removing(.zero).removing(2).removing(3)
+            #expect(drained == .empty)
+        }
+    }
+}
