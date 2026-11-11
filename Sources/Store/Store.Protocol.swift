@@ -14,6 +14,12 @@ public protocol __StoreProtocol: ~Copyable {
 
     mutating func move(at slot: Index<Element>) -> Element
 
+    /// Destroys the elements in `range` and leaves those slots vacant.
+    ///
+    /// The default moves each element out in turn. A store that can destroy a run of slots in one pass
+    /// provides its own, and generic code reaches it through this requirement.
+    mutating func deinitialize(range: Swift.Range<Index<Element>>)
+
     mutating func swapAt(_ i: Index<Element>, _ j: Index<Element>)
 
     mutating func unshare()

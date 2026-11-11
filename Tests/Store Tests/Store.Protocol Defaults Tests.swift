@@ -44,6 +44,55 @@ private struct CheckedSlots<Element>: Store.Ledgered.`Protocol`, ~Copyable {
     }
 }
 
+private struct RangedSlots: Store.Ledgered.`Protocol`, ~Copyable {
+    var slots: [Int?]
+    var initialization: Store.Initialization<Int>
+    var movedSlots: [Int] = []
+    var deinitializedRanges: [Swift.Range<Int>] = []
+
+    init(_ slots: [Int?]) {
+        self.slots = slots
+        self.initialization = .linear(count: .init(UInt(slots.count)))
+    }
+
+    var capacity: Index<Int>.Count { .init(UInt(slots.count)) }
+
+    subscript(slot: Index<Int>) -> Int {
+        get { slots[Int(slot.underlying.rawValue)]! }
+        set { slots[Int(slot.underlying.rawValue)] = newValue }
+    }
+
+    mutating func initialize(at slot: Index<Int>, to element: consuming Int) {
+        slots[Int(slot.underlying.rawValue)] = element
+    }
+
+    mutating func move(at slot: Index<Int>) -> Int {
+        let position = Int(slot.underlying.rawValue)
+        movedSlots.append(position)
+        let value = slots[position]!
+        slots[position] = nil
+        return value
+    }
+
+    mutating func deinitialize(range: Swift.Range<Index<Int>>) {
+        let lower = Int(range.lowerBound.underlying.rawValue)
+        let upper = Int(range.upperBound.underlying.rawValue)
+        deinitializedRanges.append(lower..<upper)
+        (lower..<upper).forEach { slots[$0] = nil }
+    }
+}
+
+private func deinitializeThroughTheProtocol<S: Store.`Protocol` & ~Copyable>(
+    _ store: inout S,
+    range: Swift.Range<Index<S.Element>>
+) {
+    store.deinitialize(range: range)
+}
+
+private func clearThroughTheProtocol<S: Store.Ledgered.`Protocol` & ~Copyable>(_ store: inout S) {
+    store.clear()
+}
+
 private final class DestructionLog {
     var ids: [Int] = []
 }
@@ -141,6 +190,46 @@ extension `Store.Protocol Defaults Tests` {
             let initializations = store.initializedSlots
             #expect(slots == [1, 7, 7, 4])
             #expect(initializations == [1, 2])
+        }
+
+        @Test
+        func `Generic code reaches a store's own range deinitialization instead of the slot by slot default`() {
+            var store = RangedSlots([10, 20, 30, 40])
+
+            deinitializeThroughTheProtocol(&store, range: 1..<3)
+
+            let ranges = store.deinitializedRanges
+            let moved = store.movedSlots
+            let slots = store.slots
+            #expect(ranges == [1..<3])
+            #expect(moved.isEmpty)
+            #expect(slots == [10, nil, nil, 40])
+        }
+
+        @Test
+        func `Clearing through the protocol hands each ledger range to the store's own range deinitialization`() {
+            var store = RangedSlots([10, 20, 30])
+
+            clearThroughTheProtocol(&store)
+
+            let ranges = store.deinitializedRanges
+            let moved = store.movedSlots
+            let ledger = store.initialization
+            #expect(ranges == [0..<3])
+            #expect(moved.isEmpty)
+            #expect(ledger == .empty)
+        }
+
+        @Test
+        func `A store without its own range deinitialization is emptied slot by slot through the protocol`() {
+            var store = CheckedSlots<Int>([10, 20, 30, nil])
+
+            deinitializeThroughTheProtocol(&store, range: 0..<2)
+
+            let moved = store.movedSlots
+            let slots = store.slots
+            #expect(moved == [0, 1])
+            #expect(slots == [nil, nil, 30, nil])
         }
 
         @Test
