@@ -1,4 +1,4 @@
-description: "Pure reduction algebra for the state architecture: a total update, effects as data, and typed communication keys for Swift."
+description: "Typed slot storage for Swift: initialize, read, move and destroy slots one at a time, for Copyable and ~Copyable elements."
 topics:
   - primitives
   - store

@@ -17,12 +17,7 @@ let package = Package(
         .library(name: "Store Foundation Integration", targets: ["Store Foundation Integration"]),
         .library(name: "Store Test Support", targets: ["Store Test Support"]),
     ],
-    traits: [
-        .trait(name: "Algebra", description: "Algebraic store updates, effects, and aggregate keys."),
-        .trait(name: "Optic", description: "Sendable optics for lifting store updates."),
-    ],
     dependencies: [
-        .package(url: "https://github.com/swift-atoms/swift-algebra.git", branch: "main"),
         .package(
             url: "https://github.com/swift-atoms/swift-index.git",
             branch: "main"
@@ -43,19 +38,16 @@ let package = Package(
             url: "https://github.com/swift-atoms/swift-tagged.git",
             branch: "main"
         ),
-        .package(url: "https://github.com/swift-atoms/swift-optic.git", branch: "main"),
     ],
     targets: [
         .target(
             name: "Store",
             dependencies: [
-                .product(name: "Algebra", package: "swift-algebra", condition: .when(traits: ["Algebra"])),
                 .product(name: "Index", package: "swift-index"),
                 .product(name: "Ordinal", package: "swift-ordinal"),
                 .product(name: "Tagged", package: "swift-tagged"),
                 .product(name: "Difference", package: "swift-difference"),
                 .product(name: "Cardinal", package: "swift-cardinal"),
-                .product(name: "Optic", package: "swift-optic", condition: .when(traits: ["Optic"])),
             ],
             path: "Sources/Store"
         ),
@@ -78,7 +70,6 @@ let package = Package(
         .testTarget(
             name: "Store Tests",
             dependencies: [
-                .product(name: "Algebra", package: "swift-algebra", condition: .when(traits: ["Algebra"])),
                 .target(name: "Store"),
                 .target(name: "Store Test Support"),
                 .product(name: "Difference", package: "swift-difference"),
@@ -87,7 +78,6 @@ let package = Package(
                 .product(name: "Ordinal", package: "swift-ordinal"),
                 .product(name: "Tagged", package: "swift-tagged"),
                 .target(name: "Store Foundation Integration"),
-                .product(name: "Optic", package: "swift-optic", condition: .when(traits: ["Optic"])),
             ],
             path: "Tests/Store Tests"
         ),
